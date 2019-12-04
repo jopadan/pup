@@ -89,7 +89,7 @@ int check_pathnameext(const char *pathnameext,
   return i;
 }
 
-int main(const int carg, const char *varg[])
+int main(int argc, char *argv[])
 {
   char *s;
   int i;
@@ -456,8 +456,8 @@ int main(const int carg, const char *varg[])
      }
    */
 
-  fprintf(stdout, "is_equal_files(\"%s\", \"%s\") == TRUE: ", varg[0], varg[0]);
-  if (is_equal_files(varg[0], varg[0]) == TRUE)
+  fprintf(stdout, "is_equal_files(\"%s\", \"%s\") == TRUE: ", argv[0], argv[0]);
+  if (is_equal_files(argv[0], argv[0]) == TRUE)
     fprintf(stdout, "OK\n");
   else
   {

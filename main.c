@@ -781,7 +781,7 @@ typedef enum pup_mode_e
   LIST
 } pup_mode_t;
 
-int main(int carg, char *varg[])
+int main(int argc, char *argv[])
 {
   ssize_t i;
   char *filename;
@@ -796,62 +796,62 @@ int main(int carg, char *varg[])
   mode = NONE;
   p = NULL;
 
-  for(i = 1; i < carg; i++)
+  for(i = 1; i < argc; i++)
   {
-    if (strcmp(varg[i], "--plugin") == 0)
+    if (strcmp(argv[i], "--plugin") == 0)
     {
       i++;
-      if ((i < carg) && (strncmp(varg[i], "--", 2) != 0))
-        p = select_plugin(varg[i]);
+      if ((i < argc) && (strncmp(argv[i], "--", 2) != 0))
+        p = select_plugin(argv[i]);
     }
-    else if (strcmp(varg[i], "--pack") == 0)
+    else if (strcmp(argv[i], "--pack") == 0)
     {
       mode = PACK;
       i++;
-      if ((i < carg) && (strncmp(varg[i], "--", 2) != 0))
-        filename = varg[i];
+      if ((i < argc) && (strncmp(argv[i], "--", 2) != 0))
+        filename = argv[i];
       i++;
-      if ((i < carg) && (strncmp(varg[i], "--", 2) != 0))
-        dir = varg[i];
+      if ((i < argc) && (strncmp(argv[i], "--", 2) != 0))
+        dir = argv[i];
       i++;
-      if ((i < carg) && (strncmp(varg[i], "--", 2) != 0))
-        metafile = varg[i];
+      if ((i < argc) && (strncmp(argv[i], "--", 2) != 0))
+        metafile = argv[i];
     }
-    else if (strcmp(varg[i], "--unpack") == 0)
+    else if (strcmp(argv[i], "--unpack") == 0)
     {
       mode = UNPACK;
       i++;
-      if ((i < carg) && (strncmp(varg[i], "--", 2) != 0))
-        filename = varg[i];
+      if ((i < argc) && (strncmp(argv[i], "--", 2) != 0))
+        filename = argv[i];
       i++;
-      if ((i < carg) && (strncmp(varg[i], "--", 2) != 0))
-        dir = varg[i];
+      if ((i < argc) && (strncmp(argv[i], "--", 2) != 0))
+        dir = argv[i];
       i++;
-      if ((i < carg) && (strncmp(varg[i], "--", 2) != 0))
-        metafile = varg[i];
+      if ((i < argc) && (strncmp(argv[i], "--", 2) != 0))
+        metafile = argv[i];
     }
-    else if (strcmp(varg[i], "--print") == 0)
+    else if (strcmp(argv[i], "--print") == 0)
     {
       mode = PRINT;
       i++;
-      if ((i < carg) && (strncmp(varg[i], "--", 2) != 0))
-        filename = varg[i];
+      if ((i < argc) && (strncmp(argv[i], "--", 2) != 0))
+        filename = argv[i];
     }
-    else if (strcmp(varg[i], "--savemeta") == 0)
+    else if (strcmp(argv[i], "--savemeta") == 0)
     {
       mode = SAVEMETA;
       i++;
-      if ((i < carg) && (strncmp(varg[i], "--", 2) != 0))
-        filename = varg[i];
+      if ((i < argc) && (strncmp(argv[i], "--", 2) != 0))
+        filename = argv[i];
       i++;
-      if ((i < carg) && (strncmp(varg[i], "--", 2) != 0))
-        metafile = varg[i];
+      if ((i < argc) && (strncmp(argv[i], "--", 2) != 0))
+        metafile = argv[i];
     }
-    else if (strcmp(varg[i], "--list") == 0)
+    else if (strcmp(argv[i], "--list") == 0)
       mode = LIST;
     else
     {
-      fprintf(stderr, "Unknown option: %s\n", varg[i]);
+      fprintf(stderr, "Unknown option: %s\n", argv[i]);
       return 1;
     }
   }
