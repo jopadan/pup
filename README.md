@@ -91,6 +91,6 @@ With the rest of the formats, things were easier. Some I analyzed myself, about 
 
 The archive with the original texts of the program can be downloaded here. Immediately there is a text file named ideas.txt, in which I recorded ideas and noted the stages of program development.
 
-(C) 2010-2013 Vladimir Stupin
+(C) 2010-2013 Vladimir Alekseyevich Stupin <vladimir@stupin.su>
 
 The program is distributed under the GPL 3 license.
