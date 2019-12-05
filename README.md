@@ -83,7 +83,7 @@ Credits
 - [Vladimir Stupins][stupin/pup]
 
 [jopadan/pup]: https://github.com/jopadan/pup "Jon Daniel"
-[stupin/pup]: https://stupin.su/git/pupin/pup "Vladimir Alekseyevich Stupins"
+[stupin/pup]: https://stupin.su/git/stupin/pup "Vladimir Alekseyevich Stupins"
 
 Related projects with similar features and information about the POD file format:
 - [physfs][]
