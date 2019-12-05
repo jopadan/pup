@@ -79,16 +79,15 @@ Known issues
 Credits
 -------
 
-[Jon Daniels fork of pup][jopadan/pup] https://github.com/jopadan/pup
-[Vladimir Alekseyevich Stupins original pup][stupin/pup] https://stupin.su/git/pupin/pup
+- [Jon Daniel][jopadan/pup]
+- [Vladimir Stupins][stupin/pup]
 
-[jopadan/pup]: https://github.com/jopadan/pup
-[stupin/pup]: https://stupin.su/git/pupin/pup
+[jopadan/pup]: https://github.com/jopadan/pup "Jon Daniel"
+[stupin/pup]: https://stupin.su/git/pupin/pup "Vladimir Alekseyevich Stupins"
 
 Related projects with similar features and information about the POD file format:
 [pup][], [physfs][], [podextract][], [jtrfp][], [DragonUnPACKer][], [Ghostbusters Unpack][], [Game Extractor][]
 
-[pup]: https://stupin.su/git/pupin/pup
 [physfs]: https://github.com/jopadan/physfs
 [podextract]: https://github.com/ghoost82/podextract 
 [jtrfp]: https://github.com/jtrfp/jtrfp
