@@ -39,7 +39,7 @@ Building
 Status
 ------
 
-* List of supported formats:
+List of supported formats:
 
     $ ./pup --list
     Supported plugins:
@@ -60,7 +60,7 @@ Status
     rff30   RFF-files of Blood, version 3.0
     rff31   RFF-files of Blood, version 3.1
 
-* List of formats to be implemented:
+List of formats to be implemented:
 
     Unsupported plugins:
     pod     POD-files of type:
