@@ -87,12 +87,11 @@ Credits
 
 (C) 2019 Jon Daniel <forkenmasterforce@keemail.me>
 
-Information about the POD file format was taken from [podextract][], [jtrfp][], [DragonUnPACKer][] and [Ghostbusters Unpack][]
+Related projects with similar features and information about the POD file format
+[podextract][], [physfs][], [jtrfp][], [DragonUnPACKer][], [Ghostbusters Unpack][], [Game Extractor][]
 
 [podextract]: https://github.com/ghoost82/podextract 
 [jtrfp]: https://github.com/jtrfp/jtrfp
-
-Related projects with similar features
 [physfs]: https://github.com/jopadan/physfs
 [DragonUnPACKer]: https://github.com/elbereth/DragonUnPACKer
 [Ghostbusters Unpack]: http://svn.gib.me/public/ghostbusters/trunk/
