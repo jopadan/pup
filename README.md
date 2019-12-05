@@ -86,7 +86,12 @@ Credits
 [stupin/pup]: https://stupin.su/git/pupin/pup "Vladimir Alekseyevich Stupins"
 
 Related projects with similar features and information about the POD file format:
-[pup][], [physfs][], [podextract][], [jtrfp][], [DragonUnPACKer][], [Ghostbusters Unpack][], [Game Extractor][]
+- [physfs][]
+- [podextract][]
+- [jtrfp][]
+- [DragonUnPACKer][]
+- [Ghostbusters Unpack][]
+- [Game Extractor][]
 
 [physfs]: https://github.com/jopadan/physfs
 [podextract]: https://github.com/ghoost82/podextract 
