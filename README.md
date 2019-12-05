@@ -92,6 +92,7 @@ Related projects with similar features and information about the POD file format
 - [DragonUnPACKer][]
 - [Ghostbusters Unpack][]
 - [Game Extractor][]
+- [XeNTaX Game Discussion Tools Blog][]
 
 [physfs]: https://github.com/jopadan/physfs
 [podextract]: https://github.com/ghoost82/podextract 
@@ -99,6 +100,7 @@ Related projects with similar features and information about the POD file format
 [DragonUnPACKer]: https://github.com/elbereth/DragonUnPACKer
 [Ghostbusters Unpack]: http://svn.gib.me/public/ghostbusters/trunk/
 [Game Extractor]: http://www.watto.org
+[XeNTaX Game Discussion Tools Blog]: https://forum.xentax.com/blog/
 
 (C) 2010-2013 Vladimir Alekseyevich Stupin <vladimir@stupin.su>
 
