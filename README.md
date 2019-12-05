@@ -79,22 +79,23 @@ Known issues
 Credits
 -------
 
-[pup]: https://stupin.su/git/pupin/pup
-
-(C) 2010-2013 Vladimir Alekseyevich Stupin <vladimir@stupin.su>
+[pup][Jon Daniel],
+[pup][Vladimir Alekseyevich Stupin]
 
 [pup]: https://github.com/jopadan/pup
-
-(C) 2019 Jon Daniel <forkenmasterforce@keemail.me>
+[pup]: https://stupin.su/git/pupin/pup
 
 Related projects with similar features and information about the POD file format
-[podextract][], [physfs][], [jtrfp][], [DragonUnPACKer][], [Ghostbusters Unpack][], [Game Extractor][]
+[pup][], [physfs][], [podextract][], [jtrfp][], [DragonUnPACKer][], [Ghostbusters Unpack][], [Game Extractor][]
 
+[pup]: https://stupin.su/git/pupin/pup
+[physfs]: https://github.com/jopadan/physfs
 [podextract]: https://github.com/ghoost82/podextract 
 [jtrfp]: https://github.com/jtrfp/jtrfp
-[physfs]: https://github.com/jopadan/physfs
 [DragonUnPACKer]: https://github.com/elbereth/DragonUnPACKer
 [Ghostbusters Unpack]: http://svn.gib.me/public/ghostbusters/trunk/
 [Game Extractor]: http://www.watto.org
+
+(C) 2010-2013 Vladimir Alekseyevich Stupin <vladimir@stupin.su>
 
 The program is distributed under the GPL 3 license.
