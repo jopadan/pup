@@ -66,11 +66,11 @@ List of formats to be implemented:
     pod     POD-files of type:
             POD1: Terminal Velocity, Fury3, Hellbender, Monster Truck Maddness 1 & 2,
                   CART Precision Racing
-	    POD2: Nocturne, Blair Witch Volume 1: Rustin Parr, 4x4 Evo 1 & 2
-	    POD3: Fly! 2, Blood Rayne 1 & 2, BlowOut, Aeon Flux, Metal Slug Anthology
-	    POD4: The King of Fighters Collection: The Orochi Saga, Samurai Shodown Anthology
-	    POD5: Ghostbusters: The Video Game
-	    EPD/Extended POD: Fly!
+            POD2: Nocturne, Blair Witch Volume 1: Rustin Parr, 4x4 Evo 1 & 2
+            POD3: Fly! 2, Blood Rayne 1 & 2, BlowOut, Aeon Flux, Metal Slug Anthology
+            POD4: The King of Fighters Collection: The Orochi Saga, Samurai Shodown Anthology
+            POD5: Ghostbusters: The Video Game
+            EPD/Extended POD: Fly!
 
 Known issues
 ------------
