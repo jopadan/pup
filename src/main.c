@@ -11,6 +11,7 @@
 #include "pack.h"
 #include "pack2.h"
 #include "wad23.h"
+#include "pod.h"
 #include "res.h"
 #include "dpk4.h"
 #include "dat.h"
@@ -272,6 +273,132 @@ plugin_t plugins[] = {
    &wad23_prepare_dir,
    &wad23_add_resource,
    &wad3_write_dir},
+  {
+   "pod1",
+   "POD1-file of Terminal Velocity",
+   POD1_SUBDIRS,
+   POD1_MERGE,
+   POD1_META,
+   POD1_TIME,
+   POD1_PAGE,
+   &is_pod1,
+
+   &pod1_read_dir,
+   &pod1_fill_filename,
+   &pod1_extract_resource,
+
+   &pod1_save_meta,
+   &pod1_load_meta,
+
+   &pod1_fill_name,
+   &pod1_prepare_dir,
+   &pod1_add_resourcec,
+   &pod1_write_dir},
+  {
+   "pod2",
+   "POD2-file of Terminal Velocity",
+   POD2_SUBDIRS,
+   POD2_MERGE,
+   POD2_META,
+   POD2_TIME,
+   POD2_PAGE,
+   &is_pod2,
+
+   &pod2_read_dir,
+   &pod2_fill_filename,
+   &pod2_extract_resource,
+
+   &pod2_save_meta,
+   &pod2_load_meta,
+
+   &pod2_fill_name,
+   &pod2_prepare_dir,
+   &pod2_add_resourcec,
+   &pod2_write_dir},
+  {
+   "pod3",
+   "POD3-file of Terminal Velocity",
+   POD3_SUBDIRS,
+   POD3_MERGE,
+   POD3_META,
+   POD3_TIME,
+   POD3_PAGE,
+   &is_pod3,
+
+   &pod3_read_dir,
+   &pod3_fill_filename,
+   &pod3_extract_resource,
+
+   &pod3_save_meta,
+   &pod3_load_meta,
+
+   &pod3_fill_name,
+   &pod3_prepare_dir,
+   &pod3_add_resourcec,
+   &pod3_write_dir},
+  {
+   "pod4",
+   "POD2-file of Terminal Velocity",
+   POD4_SUBDIRS,
+   POD4_MERGE,
+   POD4_META,
+   POD4_TIME,
+   POD4_PAGE,
+   &is_pod4,
+
+   &pod4_read_dir,
+   &pod4_fill_filename,
+   &pod4_extract_resource,
+
+   &pod4_save_meta,
+   &pod4_load_meta,
+
+   &pod4_fill_name,
+   &pod4_prepare_dir,
+   &pod4_add_resourcec,
+   &pod4_write_dir},
+  {
+   "pod5",
+   "POD5-file of Terminal Velocity",
+   POD5_SUBDIRS,
+   POD5_MERGE,
+   POD5_META,
+   POD5_TIME,
+   POD5_PAGE,
+   &is_pod5,
+
+   &pod5_read_dir,
+   &pod5_fill_filename,
+   &pod5_extract_resource,
+
+   &pod5_save_meta,
+   &pod5_load_meta,
+
+   &pod5_fill_name,
+   &pod5_prepare_dir,
+   &pod5_add_resourcec,
+   &pod5_write_dir},
+  {
+   "epd",
+   "EPD-file of Terminal Velocity",
+   EPD_SUBDIRS,
+   EPD_MERGE,
+   EPD_META,
+   EPD_TIME,
+   EPD_PAGE,
+   &is_epd,
+
+   &epd_read_dir,
+   &epd_fill_filename,
+   &epd_extract_resource,
+
+   &epd_save_meta,
+   &epd_load_meta,
+
+   &epd_fill_name,
+   &epd_prepare_dir,
+   &epd_add_resourcec,
+   &epd_write_dir},
   {
    "res",
    "RES-file of Comanche 3",

@@ -1,17 +1,259 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
+
 #include "bin.h"
-#include "res.h"
+#include "pod.h"
+
+enum pod_ident_type = { POD1 = 0,  POD2,  POD3,  POD4,  POD5,  EPD, };
+
+/* main variable type sizes of POD file formats                                                            */
+typedef uint32_t                             pod_number_t
+typedef int8_t                               pod_char_t
+#define POD_NUMBER_SIZE                      UINT32_WIDTH                  /* length of a numerical entry  */
+#define POD_COMMENT_SIZE                     (UINT32_WIDTH + UINT16_WIDTH) /* comment length of POD format */
+#define EPD_COMMENT_SIZE                     (UINT8_MAX + 1)               /* comment length of EPD format */
+#define POD_IDENT_SIZE                       INT8_WIDTH * 4                /* file magic ident length      */
+#define POD_IDENT_TYPE_SIZE                  (EPD + 1)                     /* number of POD format types   */
+
+/* map pod ident type enum id to file magic ident null terminated string */
+char POD_IDENT[POD_IDENT_TYPE_SIZE][POD_IDENT_SIZE + 1] = { "\0POD1", "POD2\0", "POD3\0", "POD4\0", "POD5\0", "dtxe\0" };
+
+/* pod_header_t element sizes */
+#define POD_HEADER_NUMBER_SIZE               POD_NUMBER_SIZE
+#define POD_HEADER_COMMENT_SIZE              POD_COMMENT_SIZE
+#define POD_HEADER_EPD_COMMENT_SIZE          EPD_COMMENT_SIZE
+#define POD_HEADER_IDENT_SIZE                POD_IDENT_SIZE
+#define POD_HEADER_NEXT_ARCHIVE_SIZE         POD_HEADER_COMMENT_SIZE
+#define POD_HEADER_AUTHOR_SIZE               POD_HEADER_COMMENT_SIZE
+#define POD_HEADER_COPYRIGHT_SIZE            POD_HEADER_COMMENT_SIZE
+#define POD_HEADER_CHECKSUM_SIZE             POD_HEADER_NUMBER_SIZE
+#define POD_HEADER_FILE_COUNT_SIZE           POD_HEADER_NUMBER_SIZE
+#define POD_HEADER_AUDIT_FILE_COUNT_Size     POD_HEADER_NUMBER_SIZE
+#define POD_HEADER_REVISION_SIZE             POD_HEADER_NUMBER_SIZE
+#define POD_HEADER_PRIORITY_SIZE             POD_HEADER_NUMBER_SIZE
+#define POD_HEADER_INDEX_OFFSET_SIZE         POD_HEADER_NUMBER_SIZE
+#define POD_HEADER_SIZE_INDEX_SIZE           POD_HEADER_NUMBER_SIZE
+#define POD_HEADER_UNKNOWN10C                POD_HEADER_NUMBER_SIZE
+#define POD_HEADER_UNKNOWN114                POD_HEADER_NUMBER_SIZE
+#define POD_HEADER_UNKNOWN118                POD_HEADER_NUMBER_SIZE
+#define POD_HEADER_UNKNOWN11C                POD_HEADER_NUMBER_SIZE
+
+#define POD_HEADER_POD1_SIZE (POD_HEADER_FILE_COUNT_SIZE + \
+                              POD_HEADER_COMMENT_SIZE)
+
+#define POD_HEADER_POD2_SIZE (POD_HEADER_IDENT_SIZE + \
+                              POD_HEADER_CHECKSUM_SIZE + \
+			      POD_HEADER_COMMENT_SIZE + \
+			      POD_HEADER_FILE_COUNT_SIZE + \
+			      POD_HEADER_AUDIT_FILE_COUNT_SIZE)
+
+#define POD_HEADER_POD3_SIZE (POD_HEADER_IDENT_SIZE + \
+                              POD_HEADER_CHECKSUM_SIZE + \
+			      POD_HEADER_COMMENT_SIZE + \
+			      POD_HEADER_FILE_COUNT_SIZE + \
+			      POD_HEADER_AUDIT_FILE_COUNT_SIZE + \
+			      POD_HEADER_REVISION_SIZE + \
+			      POD_HEADER_PRIORITY_SIZE + \
+			      POD_HEADER_AUTHOR_SIZE + \
+			      POD_HEADER_COPYRIGHT_SIZE + \
+			      POD_HEADER_INDEX_OFFSET_SIZE + \
+			      POD_HEADER_UNKNOWN10C_SIZE + \
+			      POD_HEADER_SIZE_INDEX_SIZE + \
+			      POD_HEADER_UNKNOWN114_SIZE + \
+			      POD_HEADER_UNKNOWN118_SIZE + \
+			      POD_HEADER_UNKNOWN11C_SIZE)
+
+#define POD_HEADER_POD4_SIZE (POD_HEADER_IDENT_SIZE + \
+                              POD_HEADER_CHECKSUM_SIZE + \
+			      POD_HEADER_COMMENT_SIZE + \
+			      POD_HEADER_FILE_COUNT_SIZE + \
+			      POD_HEADER_AUDIT_FILE_COUNT_SIZE + \
+			      POD_HEADER_REVISION_SIZE + \
+			      POD_HEADER_PRIORITY_SIZE + \
+			      POD_HEADER_AUTHOR_SIZE + \
+			      POD_HEADER_COPYRIGHT_SIZE + \
+			      POD_HEADER_INDEX_OFFSET_SIZE + \
+			      POD_HEADER_UNKNOWN10C_SIZE + \
+			      POD_HEADER_SIZE_INDEX_SIZE + \
+			      POD_HEADER_UNKNOWN114_SIZE + \
+			      POD_HEADER_UNKNOWN118_SIZE + \
+			      POD_HEADER_UNKNOWN11C_SIZE)
+
+#define POD_HEADER_POD5_SIZE (POD_HEADER_IDENT_SIZE + \
+                              POD_HEADER_CHECKSUM_SIZE + \
+			      POD_HEADER_COMMENT_SIZE + \
+			      POD_HEADER_FILE_COUNT_SIZE + \
+			      POD_HEADER_AUDIT_FILE_COUNT_SIZE + \
+			      POD_HEADER_REVISION_SIZE + \
+			      POD_HEADER_PRIORITY_SIZE + \
+			      POD_HEADER_AUTHOR_SIZE + \
+			      POD_HEADER_COPYRIGHT_SIZE + \
+			      POD_HEADER_INDEX_OFFSET_SIZE + \
+			      POD_HEADER_UNKNOWN10C_SIZE + \
+			      POD_HEADER_SIZE_INDEX_SIZE + \
+			      POD_HEADER_UNKNOWN114_SIZE + \
+			      POD_HEADER_UNKNOWN118_SIZE + \
+			      POD_HEADER_UNKNOWN11C_SIZE + \
+			      POD_HEADER_NEXT_ARCHIVE_SIZE)
+
+#define POD_HEADER_EPD_SIZE  (POD_HEADER_IDENT_SIZE + \
+                              POD_HEADER_EPD_COMMENT_SIZE + \
+			      POD_HEADER_FILE_COUNT_SIZE + \
+			      POD_HEADER_VERSION_SIZE + \
+			      POD_HEADER_CHECKSUM_SIZE)
+
+const ssize_t POD_HEADER_SIZE[POD_IDENT_TYPE_SIZE] =
+{
+	POD_HEADER_POD1_SIZE,
+	POD_HEADER_POD2_SIZE,
+	POD_HEADER_POD3_SIZE,
+	POD_HEADER_POD4_SIZE,
+	POD_HEADER_POD5_SIZE,
+	POD_HEADER_EPD_SIZE
+}
+
+typedef struct pod_header_pod1_s
+{
+	pod_number_t file_count;
+	pod_char_t comment[POD_HEADER_COMMENT_SIZE];
+} pod_header_pod1_t;
+
+typedef struct pod_header_pod2_s
+{
+	pod_char_t ident[POD_HEADER_IDENT_SIZE];
+	pod_number_t checksum;
+	pod_char_t comment[POD_HEADER_COMMENT_SIZE];
+	pod_number_t file_count;
+	pod_number_t audit_file_count;
+} pod_header_pod2_t;
+
+typedef struct pod_header_pod3_s
+{
+	pod_char_t ident[POD_HEADER_IDENT_SIZE];
+	pod_number_t checksum;
+	pod_char_t comment[POD_HEADER_COMMENT_SIZE];
+	pod_number_t file_count;
+	pod_number_t audit_file_count;
+	pod_number_t revision;
+	pod_number_t priority;
+	pod_char_t author[POD_HEADER_AUTHOR_SIZE];
+	pod_char_t copyright[POD_HEADER_COPYRIGHT_SIZE];
+	pod_number_t index_offset;
+	pod_number_t unknown10c;
+	pod_number_t size_index;
+	pod_number_t unknown114;
+	pod_number_t unknown118;
+	pod_number_t unknown11C;
+} pod_header_pod3_t;
+
+typedef struct pod_header_pod4_s
+{
+	pod_char_t ident[POD_HEADER_IDENT_SIZE];
+	pod_number_t checksum;
+	pod_char_t comment[POD_HEADER_COMMENT_SIZE];
+	pod_number_t file_count;
+	pod_number_t audit_file_count;
+	pod_number_t revision;
+	pod_number_t priority;
+	pod_char_t author[POD_HEADER_AUTHOR_SIZE];
+	pod_char_t copyright[POD_HEADER_COPYRIGHT_SIZE];
+	pod_number_t index_offset;
+	pod_number_t unknown10c;
+	pod_number_t size_index;
+	pod_number_t unknown114;
+	pod_number_t unknown118;
+	pod_number_t unknown11C;
+} pod_header_pod4_t;
+
+typedef struct pod_header_pod5_s
+{
+	pod_char_t ident[POD_HEADER_IDENT_SIZE];
+	pod_number_t checksum;
+	pod_char_t comment[POD_HEADER_COMMENT_SIZE];
+	pod_number_t file_count;
+	pod_number_t audit_file_count;
+	pod_number_t revision;
+	pod_number_t priority;
+	pod_char_t author[POD_HEADER_AUTHOR_SIZE];
+	pod_char_t copyright[POD_HEADER_COPYRIGHT_SIZE];
+	pod_number_t index_offset;
+	pod_number_t unknown10c;
+	pod_number_t size_index;
+	pod_number_t unknown114;
+	pod_number_t unknown118;
+	pod_number_t unknown11C;
+	pod_char_t next_archive[POD_HEADER_NEXT_ARCHIVE_SIZE];
+} pod_header_pod5_t;
+
+typedef struct pod_header_epd_s
+{
+	pod_char_t ident[POD_HEADER_IDENT_SIZE];
+	pod_char_t comment[POD_HEADER_EPD_COMMENT_SIZE];
+	pod_number_t file_count;
+	pod_number_t version;
+	pod_number_t checksum;
+} pod_header_epd_t;
+
+/* pod_dir_entry_t element sizes */
+#define POD_DIR_ENTRY_FILENAME_SIZE          256
+#define POD_DIR_ENTRY_EPD_FILENAME_SIZE      64
+#define POD_DIR_ENTRY_POD1_FILENAME_SIZE     32
+
+#define POD_DIR_ENTRY_NUMBER_SIZE            POD_NUMBER_SIZE
+#define POD_DIR_ENTRY_SIZE_SIZE              POD_DIR_ENTRY_NUMBER_SIZE
+#define POD_DIR_ENTRY_OFFSET_SIZE            POD_DIR_ENTRY_NUMBER_SIZE
+#define POD_DIR_ENTRY_PATH_OFFSET_SIZE       POD_DIR_ENTRY_NUMBER_SIZE
+#define POD_DIR_ENTRY_UNCOMPRESS_SIZE        POD_DIR_ENTRY_NUMBER_SIZE
+#define POD_DIR_ENTRY_COMPRESSION_LEVEL_SIZE POD_DIR_ENTRY_NUMBER_SIZE
+#define POD_DIR_ENTRY_TIMESTAMP_SIZE         POD_DIR_ENTRY_NUMBER_SIZE
+#define POD_DIR_ENTRY_CHECKSUM_SIZE          POD_DIR_ENTRY_NUMBER_SIZE
 
 
-typedef enum pod_ident_type_e = { POD1 = 0,  POD2,  POD3,  POD4,  POD5,  EPD, } pod_ident_type_t;
+/* 40 bytes */
+#define POD_DIR_ENTRY_POD1_SIZE (POD_DIR_ENTRY_POD1_FILENAME_SIZE + \
+                                 POD_DIR_ENTRY_SIZE_SIZE + \
+				 POD_DIR_ENTRY_OFFSET_SIZE)
+/* 80 bytes */
+#define POD_DIR_ENTRY_EPD_SIZE (POD_DIR_ENTRY_EPD_FILENAME_SIZE + \
+                                POD_DIR_ENTRY_SIZE_SIZE + \
+				POD_DIR_ENTRY_OFFSET_SIZE + \
+				POD_DIR_ENTRY_TIMESTAMP_SIZE + \
+				POD_DIR_ENTRY_CHECKSUM_SIZE) 
 
-#define POD_IDENT_TYPE_SIZE (EPD + 1)
+/* 20 bytes */
+#define POD_DIR_ENTRY_POD2_SIZE (POD_DIR_ENTRY_PATH_OFFSET_SIZE + \
+                                 POD_DIR_ENTRY_SIZE_SIZE + \
+				 POD_DIR_ENTRY_OFFSET_SIZE + \
+				 POD_DIR_ENTRY_TIMESTAMP_SIZE + \
+				 POD_DIR_ENTRY_CHECKSUM_SIZE)
 
-char POD_IDENT[POD_IDENT_TYPE_SIZE][5] = { "\0POD1", "POD2\0", "POD3\0", "POD4\0", "POD5\0", "dtxe\0" };
+#define POD_DIR_ENTRY_POD3_SIZE POD_DIR_ENTRY_POD2_SIZE
+
+/* 28 bytes */
+#define POD_DIR_ENTRY_POD4_SIZE (POD_DIR_ENTRY_PATH_OFFSET_SIZE + \
+                                 POD_DIR_ENTRY_SIZE_SIZE + \
+				 POD_DIR_ENTRY_OFFSET_SIZE + \
+				 POD_DIR_ENTRY_UNCOMPRESSED_SIZE + \
+				 POD_DIR_ENTRY_COMPRESSION_LEVEL_SIZE + \
+				 POD_DIR_ENTRY_TIMESTAMP_SIZE + \
+				 POD_DIR_ENTRY_CHECKSUM_SIZE)
+
+#define POD_DIR_ENTRY_POD5_SIZE POD_DIR_ENTRY_POD4_SIZE
+
+const ssize_t POD_DIR_ENTRY_SIZE[POD_IDENT_TYPE_SIZE] = \
+{
+	POD_DIR_ENTRY_POD1_SIZE,
+	POD_DIR_ENTRY_POD2_SIZE,
+	POD_DIR_ENTRY_POD3_SIZE,
+	POD_DIR_ENTRY_POD4_SIZE,
+	POD_DIR_ENTRY_POD5_SIZE,
+	POD_DIR_ENTRY_EPD_SIZE
+}
 
 typedef struct pod_dir_entry_s {
-	char* filename[POD_IDENT_TYPE_SIZE] = 
+	char* filename[POD_IDENT_TYPE_SIZE];
 	uint32_t file_path_offset;
 	uint32_t file_size;
 	uint32_t file_offset;
@@ -21,59 +263,33 @@ typedef struct pod_dir_entry_s {
 	uint32_t file_checksum;
 } pod_dir_entry_t;
 
-#define POD_HEADER_IDENT_SIZE 4
-#define POD_HEADER_NUMBER_SIZE 4
-#define POD_HEADER_IDENT_SIZE POD_HEADER_NUMBER_SIZE
-#define POD_HEADER_CHECKSUM_SIZE POD_HEADER_NUMBER_SIZE
-#define POD_HEADER_FILE_COUNT_SIZE POD_HEADER_NUMBER_SIZE
-#define POD_HEADER_AUDIT_FILE_COUNT_Size POD_HwEADER_NUMBER_SIZE
-#define POD_HEADER_REVISION_SIZE POD_HEADER_NUMBER_SIZE
-#define POD_HEADER_PRIORITY_SIZE POD_HEADER_NUMBER_SIZE
-#define POD_HEADER_INDEX_OFFSET_SIZE POD_HEADER_NUMBER_SIZE
-#define POD_HEADER_SIZE_INDEX_SIZE POD_HEADER_NUMBER_SIZE
-#define POD_HEADER_UNKNOWN10C POD_HEADER_NUMBER_SIZE
-#define POD_HEADER_UNKNOWN114 POD_HEADER_NUMBER_SIZE
-#define POD_HEADER_UNKNOWN118 POD_HEADER_NUMBER_SIZE
-#define POD_HEADER_UNKNOWN11C POD_HEADER_NUMBER_SIZE
+bool_t pod_dir_entry_write(FILE* file, pod_dir_entry_t* src, int pod_type)
+{
+	switch(pod_type)
+	{
+		case POD1:
+			
+		case POD2:
+		case POD3:
+		case POD4:
+		case POD5:
+		case EPD:
+		default:
+		break;
+	}
 
-#define POD_HEADER_PSEUDONAME_SIZE 12
-#define POD_HEADER_SIZE (POD_HEADER_IDENT_SIZE + POD_HEADER_NUMBER_SIZE +\
-	POD_HEADER_
-#define COMMENT_LENGTH_POD 80
-#define COMMENT_LENGTH_EPD 256
-#define AUTHOR_LENGTH 80
-#define COPYRIGHT_LENGTH 80
-#define NEXT_ARCHIVE_LENGTH 80
-#define FILENAME_LENGTH 256
-#define FILENAME_LENGTH_EPD 64
-#define FILENAME_LENGTH_POD 32
+	return FALSE;
+}
 
-#define DIR_ENTRY_SIZE_POD1 40
-#define DIR_ENTRY_SIZE_EPD 80
-#define DIR_ENTRY_SIZE_POD2_3 20
-#define DIR_ENTRY_SIZE_POD4_5 28
-
-#define POD_ENTRY_SIZE_POD1
-#define RES_IDENT "RESOURCE2xxx"
-#define RES_HEADER_IDENT_SIZE 12
-#define RES_HEADER_NUMBER_SIZE 4
-#define RES_HEADER_PSEUDONAME_SIZE 12
-#define RES_HEADER_FULLSIZE_SIZE 4
-#define RES_HEADER_ZEROS_SIZE 4
-#define RES_HEADER_SIZE (RES_HEADER_IDENT_SIZE + RES_HEADER_NUMBER_SIZE +\
-	RES_HEADER_PSEUDONAME_SIZE + RES_HEADER_FULLSIZE_SIZE + \
-	RES_HEADER_ZEROS_SIZE)
+pod resentry_to_pod_dir_entry(pod_dir_entry_t* src, resentry_t *re)
+{
+}
 
 #define RES_ENTRY_NAME_SIZE 12
 #define RES_ENTRY_OFFSET_SIZE 4
 #define RES_ENTRY_SIZE_SIZE 4
 #define RES_ENTRY_SIZE (RES_ENTRY_NAME_SIZE +  RES_ENTRY_OFFSET_SIZE + \
 	RES_ENTRY_SIZE_SIZE)
-
-bool_t is_pod(restable_t * rt)
-{
-  return (POD_IDENT_TYPE_SIZE > pod_type(restable_t * rt) >= 0);
-}
 
 int pod_type(restable_t * rt)
 {
@@ -91,12 +307,48 @@ int pod_type(restable_t * rt)
   return POD1;
 }
 
-bool_t pod_read_entry(FILE * file, resentry_t * re)
+bool_t is_pod(restable_t * rt)
+{
+  return (POD_IDENT_TYPE_SIZE > pod_type(restable_t * rt) >= 0);
+}
+
+bool_t is_pod1(restable_t * rt)
+{
+  return (POD1 == pod_type(restable_t * rt) >= 0);
+}
+
+bool_t is_pod2(restable_t * rt)
+{
+  return (POD2 == pod_type(restable_t * rt) >= 0);
+}
+
+bool_t is_pod3(restable_t * rt)
+{
+  return (POD3 == pod_type(restable_t * rt) >= 0);
+}
+
+bool_t is_pod4(restable_t * rt)
+{
+  return (POD4 == pod_type(restable_t * rt) >= 0);
+}
+
+bool_t is_pod5(restable_t * rt)
+{
+  return (POD5 == pod_type(restable_t * rt) >= 0);
+}
+
+bool_t is_epd(restable_t * rt)
+{
+  return (EPD == pod_type(restable_t * rt) >= 0);
+}
+
+
+bool_t pod1_read_entry(FILE * file, resentry_t * re)
 {
   char name[POD_ENTRY_NAME_SIZE];
 
   
-  if (readf(file, "c4l4l4", name, &(re->offset), &(re->size)) != OK)
+  if (readf(file, "l4cN", name, &(re->offset), &(re->size)) != OK)
   {
     fprintf(stderr, "res_read_entry: Can't read entry.\n");
     return FALSE;
@@ -130,45 +382,51 @@ bool_t pod_write_entry(FILE * file, resentry_t * re)
   return TRUE;
 }
 
-bool_t pod_read_dir(restable_t * rt)
+bool_t pod1_read_dir(restable_t * rt)
 {
-  char ident[RES_HEADER_IDENT_SIZE];
-  size_t number;
+  pod_header_pod1_t pod_header;
   size_t i;
 
-  if (readf(rt->file, "c12l4c20", ident, &number, NULL) != OK)
+  if (readf(rt->file, "l4cn", &pod_header.file_count, pod_header.comment, POD_HEADER_COMMENT_SIZE, NULL) != OK)
   {
     fprintf(stderr, "res_read_dir: Can't read header.\n");
     return FALSE;
   }
-  if (strncmp(ident, RES_IDENT, RES_HEADER_IDENT_SIZE) != 0)
-  {
-    fprintf(stderr, "res_read_dir: Wrong ident.\n");
-    return FALSE;
-  }
-  if (rt_set_number(rt, number - 1) == FALSE)
+  if (rt_set_number(rt, pod_header.file_count - 1) == FALSE)
   {
     fprintf(stderr, "res_read_dir: Can't resize entries.\n");
     return FALSE;
   }
   for(i = 0; i < rt->number; i++)
   {
-    if (res_read_entry(rt->file, &(rt->entries[i])) == FALSE)
+    if (pod1_read_entry(rt->file, &(rt->entries[i])) == FALSE)
       return FALSE;
   }
   return TRUE;
 }
 
-bool_t pod_fill_filename(resentry_t * re)
+bool_t pod2_read_dir(restable_t * rt)
 {
-  s_strcpy(&(re->filename), re->name);
-  s_strlower(re->filename);
-  if (re->filename == NULL)
-    return FALSE;
-  return TRUE;
-}
+  pod_header_pod2_t pod_header;
+  size_t i;
 
-bool_t pod_fill_name(resentry_t * re)
+  if (readf(rt->file, "cnl4cnl4l4", pod_header.ident, POD_HEADER_IDENT_SIZE, &pod_header.checksum, pod_header.comment, POD_HEADER_COMMENT_SIZE, &pod_header.file_count, &pod_header.audit_file_count, NULL) != OK)
+  {
+    fprintf(stderr, "res_read_dir: Can't read header.\n");
+    return FALSE;
+  }
+  if (rt_set_number(rt, pod_header.file_count - 1) == FALSE)
+  {
+    fprintf(stderr, "res_read_dir: Can't resize entries.\n");
+    return FALSE;
+  }
+  for(i = 0; i < rt->number; i++)
+  {
+    if (pod2_read_entry(rt->file, &(rt->entries[i])) == FALSE)
+      return FALSE;
+  }
+  return TRUE;
+
 {
   s_strcpy(&(re->name), re->filename);
   s_strupper(re->name);
