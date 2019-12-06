@@ -387,14 +387,17 @@ bool_t pod1_read_dir(restable_t * rt)
   pod_header_pod1_t pod_header;
   size_t i;
 
-  if (readf(rt->file, "l4cn", &pod_header.file_count, pod_header.comment, POD_HEADER_COMMENT_SIZE, NULL) != OK)
+  if (readf(rt->file, "l4cn", 
+            &pod_header.file_count,
+            pod_header.comment, POD_HEADER_COMMENT_SIZE , NULL) != OK)
   {
-    fprintf(stderr, "res_read_dir: Can't read header.\n");
+    fprintf(stderr, "pod1_read_dir: Can't read header.\n");
     return FALSE;
   }
+
   if (rt_set_number(rt, pod_header.file_count - 1) == FALSE)
   {
-    fprintf(stderr, "res_read_dir: Can't resize entries.\n");
+    fprintf(stderr, "pod1_read_dir: Can't resize entries.\n");
     return FALSE;
   }
   for(i = 0; i < rt->number; i++)
@@ -410,29 +413,183 @@ bool_t pod2_read_dir(restable_t * rt)
   pod_header_pod2_t pod_header;
   size_t i;
 
-  if (readf(rt->file, "cnl4cnl4l4", pod_header.ident, POD_HEADER_IDENT_SIZE, &pod_header.checksum, pod_header.comment, POD_HEADER_COMMENT_SIZE, &pod_header.file_count, &pod_header.audit_file_count, NULL) != OK)
+  if (readf(rt->file, "cnl4cnl4l4", pod_header.ident, POD_HEADER_IDENT_SIZE, 
+                                    &pod_header.checksum,
+				    pod_header.comment, POD_HEADER_COMMENT_SIZE, 
+				    &pod_header.file_count, 
+				    &pod_header.audit_file_count, NULL) != OK)
   {
-    fprintf(stderr, "res_read_dir: Can't read header.\n");
+    fprintf(stderr, "pod2_read_dir: Can't read header.\n");
     return FALSE;
   }
+
   if (rt_set_number(rt, pod_header.file_count - 1) == FALSE)
   {
-    fprintf(stderr, "res_read_dir: Can't resize entries.\n");
+    fprintf(stderr, "pod2_read_dir: Can't resize entries.\n");
     return FALSE;
   }
+
   for(i = 0; i < rt->number; i++)
   {
     if (pod2_read_entry(rt->file, &(rt->entries[i])) == FALSE)
       return FALSE;
   }
   return TRUE;
+}
 
+bool_t pod3_read_dir(restable_t * rt)
+{
+  pod_header_pod3_t pod_header;
+  size_t i;
+
+  if (readf(rt->file, "cnl4cnl4l4l4l4cncnl4l4l4l4l4l4", pod_header.ident, POD_HEADER_IDENT_SIZE, 
+                                   &pod_header.checksum,
+				   pod_header.comment, POD_HEADER_COMMENT_SIZE, 
+				   &pod_header.file_count, 
+				   &pod_header.audit_file_count, 
+				   &pod_header.revision, 
+				   &pod_header.priority,
+				   pod_header.author, POD_HEADER_AUTHOR_SIZE,
+				   pod_header.copyright, POD_HEADER_COPYRIGHT_SIZE,
+	  			   &pod_header.index_offset,
+				   &pod_header.unknown10c,
+                                   &pod_header.size_index,
+ 				   &pod_header.unknown114,
+                                   &pod_header.unknown118,
+                                   &pod_header.unknown11C, NULL) != OK)
+  {
+    fprintf(stderr, "pod3_read_dir: Can't read header.\n");
+    return FALSE;
+  }
+
+  if (rt_set_number(rt, pod_header.file_count - 1) == FALSE)
+  {
+    fprintf(stderr, "pod3_read_dir: Can't resize entries.\n");
+    return FALSE;
+  }
+
+  for(i = 0; i < rt->number; i++)
+  {
+    if (pod3_read_entry(rt->file, &(rt->entries[i])) == FALSE)
+      return FALSE;
+  }
+  return TRUE;
+}
+
+bool_t pod4_read_dir(restable_t * rt)
+{
+  pod_header_pod4_t pod_header;
+  size_t i;
+
+  if (readf(rt->file, "cnl4cnl4l4l4l4cncnl4l4l4l4l4l4", pod_header.ident, POD_HEADER_IDENT_SIZE, 
+                                   &pod_header.checksum,
+				   pod_header.comment, POD_HEADER_COMMENT_SIZE, 
+				   &pod_header.file_count, 
+				   &pod_header.audit_file_count, 
+				   &pod_header.revision, 
+				   &pod_header.priority,
+				   pod_header.author, POD_HEADER_AUTHOR_SIZE,
+				   pod_header.copyright, POD_HEADER_COPYRIGHT_SIZE,
+	  			   &pod_header.index_offset,
+				   &pod_header.unknown10c,
+                                   &pod_header.size_index,
+ 				   &pod_header.unknown114,
+                                   &pod_header.unknown118,
+                                   &pod_header.unknown11C, NULL) != OK)
+  {
+    fprintf(stderr, "pod4_read_dir: Can't read header.\n");
+    return FALSE;
+  }
+
+  if (rt_set_number(rt, pod_header.file_count - 1) == FALSE)
+  {
+    fprintf(stderr, "pod4_read_dir: Can't resize entries.\n");
+    return FALSE;
+  }
+
+  for(i = 0; i < rt->number; i++)
+  {
+    if (pod4_read_entry(rt->file, &(rt->entries[i])) == FALSE)
+      return FALSE;
+  }
+  return TRUE;
+}
+
+bool_t pod5_read_dir(restable_t * rt)
+{
+  pod_header_pod5_t pod_header;
+  size_t i;
+
+  if (readf(rt->file, "cnl4cnl4l4l4l4cncnl4l4l4l4l4l4", pod_header.ident, POD_HEADER_IDENT_SIZE, 
+                                   &pod_header.checksum,
+				   pod_header.comment, POD_HEADER_COMMENT_SIZE, 
+				   &pod_header.file_count, 
+				   &pod_header.audit_file_count, 
+				   &pod_header.revision, 
+				   &pod_header.priority,
+				   pod_header.author, POD_HEADER_AUTHOR_SIZE,
+				   pod_header.copyright, POD_HEADER_COPYRIGHT_SIZE,
+	  			   &pod_header.index_offset,
+				   &pod_header.unknown10c,
+                                   &pod_header.size_index,
+ 				   &pod_header.unknown114,
+                                   &pod_header.unknown118,
+                                   &pod_header.unknown11C, NULL) != OK)
+  {
+    fprintf(stderr, "pod5_read_dir: Can't read header.\n");
+    return FALSE;
+  }
+
+  if (rt_set_number(rt, pod_header.file_count - 1) == FALSE)
+  {
+    fprintf(stderr, "pod5_read_dir: Can't resize entries.\n");
+    return FALSE;
+  }
+
+  for(i = 0; i < rt->number; i++)
+  {
+    if (pod5_read_entry(rt->file, &(rt->entries[i])) == FALSE)
+      return FALSE;
+  }
+  return TRUE;
+}
+
+bool_t epd_read_dir(restable_t * rt)
+{
+  pod_header_epd_t pod_header;
+  size_t i;
+
+  if (readf(rt->file, "cncnl4l4l4", pod_header.ident, POD_HEADER_IDENT_SIZE, 
+				    pod_header.comment, POD_HEADER_EPD_COMMENT_SIZE, 
+				    &pod_header.file_count, 
+                                    &pod_header.version,
+				    &pod_header.checksum, NULL) != OK)
+  {
+    fprintf(stderr, "epd_read_dir: Can't read header.\n");
+    return FALSE;
+  }
+
+  if (rt_set_number(rt, pod_header.file_count - 1) == FALSE)
+  {
+    fprintf(stderr, "epd_read_dir: Can't resize entries.\n");
+    return FALSE;
+  }
+
+  for(i = 0; i < rt->number; i++)
+  {
+    if (epd_read_entry(rt->file, &(rt->entries[i])) == FALSE)
+      return FALSE;
+  }
+  return TRUE;
+}
+
+bool_t pod_fill_name(resentry_t* re)
 {
   s_strcpy(&(re->name), re->filename);
   s_strupper(re->name);
   if (is_dos_filename(re->name) == FALSE)
   {
-    fprintf(stderr, "res_fill_name: \"%s\" is not DOS filename.\n", re->name);
+    fprintf(stderr, "pod_fill_name: \"%s\" is not DOS filename.\n", re->name);
     return FALSE;
   }
   return TRUE;
@@ -440,11 +597,11 @@ bool_t pod2_read_dir(restable_t * rt)
 
 bool_t pod_prepare_dir(restable_t * rt)
 {
-  fseek(rt->file, RES_HEADER_SIZE + RES_ENTRY_SIZE * rt->number, SEEK_SET);
+  fseek(rt->file, POD_HEADER_SIZE + POD_DIR_ENTRY_SIZE * rt->number, SEEK_SET);
   return TRUE;
 }
 
-bool_t pod_write_dir(restable_t * rt)
+bool_t pod1_write_dir(restable_t * rt)
 {
   size_t i;
   size_t offset;
@@ -486,7 +643,7 @@ bool_t pod_add_resource(restable_t * rt, size_t i)
 
   if (writec(rt->file, NULL, RES_ENTRY_SIZE) != OK)
   {
-    fprintf(stderr, "res_add_resource: Can't write header of entry #%zu.\n", i);
+    fprintf(stderr, "pod_add_resource: Can't write header of entry #%zu.\n", i);
     s_free(&filename);
     return FALSE;
   }
@@ -497,7 +654,7 @@ bool_t pod_add_resource(restable_t * rt, size_t i)
   s_strcat(&filename, rt->entries[i].filename);
   if (fadd(rt->file, filename, &(rt->entries[i].size)) == FALSE)
   {
-    fprintf(stderr, "res_add_resource: Can't open or read file \"%s\".\n",
+    fprintf(stderr, "pod_add_resource: Can't open or read file \"%s\".\n",
             filename);
     s_free(&filename);
     return FALSE;
