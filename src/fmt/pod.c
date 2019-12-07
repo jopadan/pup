@@ -252,6 +252,60 @@ const ssize_t POD_DIR_ENTRY_SIZE[POD_IDENT_TYPE_SIZE] = \
 	POD_DIR_ENTRY_EPD_SIZE
 }
 
+typedef struct pod1_entry_s {
+	pod_char_t name[POD_DIR_ENTRY_POD1_FILENAME_SIZE];
+	pod_number_t size;
+	pod_number_t offset;
+} pod1_entry_t;
+
+typedef struct epd_entry_s {
+	pod_char_t name[POD_DIR_ENTRY_EPD_FILENAME_SIZE];
+	pod_number_t size;
+	pod_number_t offset;
+	pod_number_t timestamp;
+	pod_number_t checksum;
+} epd_entry_t;
+
+typedef struct pod2_entry_s {
+	pod_number_t path_offset;
+	pod_number_t size;
+	pod_number_t offset;
+	pod_number_t timestamp;
+	pod_number_t checksum;
+	pod_char_t name[POD_DIR_ENTRY_FILENAME_SIZE];
+} pod2_entry_t;
+
+typedef struct pod3_entry_s {
+	pod_number_t path_offset;
+	pod_number_t size;
+	pod_number_t offset;
+	pod_number_t timestamp;
+	pod_number_t checksum;
+	pod_char_t name[POD_DIR_ENTRY_FILENAME_SIZE];
+} pod3_entry_t;
+
+typedef struct pod4_entry_s {
+	pod_number_t path_offset;
+	pod_number_t size;
+	pod_number_t offset;
+	pod_number_t uncompressed;
+	pod_number_t compression_level;
+	pod_number_t timestamp;
+	pod_number_t checksum;
+	pod_char_t name[POD_DIR_ENTRY_FILENAME_SIZE];
+} pod4_entry_t;
+
+typedef struct pod5_entry_s {
+	pod_number_t path_offset;
+	pod_number_t size;
+	pod_number_t offset;
+	pod_number_t uncompressed;
+	pod_number_t compression_level;
+	pod_number_t timestamp;
+	pod_number_t checksum;
+	pod_char_t name[POD_DIR_ENTRY_FILENAME_SIZE];
+} pod5_entry_t;
+
 typedef struct pod_dir_entry_s {
 	char* filename[POD_IDENT_TYPE_SIZE];
 	uint32_t file_path_offset;
@@ -346,24 +400,24 @@ bool_t is_epd(restable_t * rt)
 bool_t pod1_read_entry(FILE * file, resentry_t * re)
 {
   char name[POD_ENTRY_NAME_SIZE];
-
+ pod1_dir_entry
   
-  if (readf(file, "l4cN", name, &(re->offset), &(re->size)) != OK)
+  if (readf(file, "lncN", name, &(re->offset), &(re->size)) != OK)
   {
-    fprintf(stderr, "res_read_entry: Can't read entry.\n");
+    fprintf(stderr, "pod1_read_entry: Can't read entry.\n");
     return FALSE;
   }
   re->compressed = re->size;
 
-  re->offset += RES_ENTRY_SIZE;
+  re->offset += POD_DIR_ENTRY_POD1_SIZE;
 
-  s_strncpy(&(re->name), name, RES_ENTRY_NAME_SIZE);
+  s_strncpy(&(re->name), name, POD_DIR_ENTRY_POD1_SIZE);
   return TRUE;
 }
 
 bool_t pod_write_entry(FILE * file, resentry_t * re)
 {
-  char name[RES_ENTRY_NAME_SIZE];
+  char name[POD_DIR_ENTRY_NAME_SIZE];
 
   if (strlen(re->name) > RES_ENTRY_NAME_SIZE)
   {
