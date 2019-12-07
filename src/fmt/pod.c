@@ -11,12 +11,15 @@ enum pod_ident_type = { POD1 = 0,  POD2,  POD3,  POD4,  POD5,  EPD, };
 /* main variable type sizes of POD file formats                                                            */
 typedef uint32_t                             pod_number_t
 typedef int8_t                               pod_char_t
-#define POD_NUMBER_SIZE                      UINT32_WIDTH                  /* length of a numerical entry  */
-#define POD_COMMENT_SIZE                     (UINT32_WIDTH + UINT16_WIDTH) /* comment length of POD format */
-#define EPD_COMMENT_SIZE                     (UINT8_MAX + 1)               /* comment length of EPD format */
-#define POD_IDENT_SIZE                       INT8_WIDTH * 4                /* file magic ident length      */
-#define POD_IDENT_TYPE_SIZE                  (EPD + 1)                     /* number of POD format types   */
-
+#define POD_NUMBER_SIZE                      UINT32_WIDTH                  /* length of a numerical entry   */
+#define POD_COMMENT_SIZE                     (UINT32_WIDTH + UINT16_WIDTH) /* comment length of POD format  */
+#define EPD_COMMENT_SIZE                     (UINT8_MAX + 1)               /* comment length of EPD format  */
+#define POD_IDENT_SIZE                       INT8_WIDTH * 4                /* file magic ident length       */
+#define POD_IDENT_TYPE_SIZE                  (EPD + 1)                     /* number of POD format types    */
+#define POD_HEADER_CHECKSUM_DEFAULT          0x44424247                    /* default checksum of POD file  */
+#define POD_ENTRY_CHECKSUM_DEFAULT           0x20444542                    /* default checksum of POD entry */
+#define POD_ENTRY_TIMESTAMP_DEFAULT          0x42494720                   /* default timestamp of POD entry */
+#define POD_HEADER_UNKNOWN10C_DEFAULT        0x58585858			   /* default value of unknown10c   */
 /* map pod ident type enum id to file magic ident null terminated string */
 char POD_IDENT[POD_IDENT_TYPE_SIZE][POD_IDENT_SIZE + 1] = { "\0POD1", "POD2\0", "POD3\0", "POD4\0", "POD5\0", "dtxe\0" };
 
@@ -399,38 +402,115 @@ bool_t is_epd(restable_t * rt)
 
 bool_t pod1_read_entry(FILE * file, resentry_t * re)
 {
-  char name[POD_ENTRY_NAME_SIZE];
- pod1_dir_entry
+  pod1_entry_t pod_entry;
   
-  if (readf(file, "lncN", name, &(re->offset), &(re->size)) != OK)
+  if (readf(file, "cnlnln", pod_entry.name, POD_DIR_ENTRY_POD1_FILENAME_SIZE,
+                            &(pod_entry.size), POD_DIR_ENTRY_SIZE_SIZE,
+			    &(pod_entry.offset), POD_DIR_ENTRY_OFFSET_SIZE) != OK)
   {
     fprintf(stderr, "pod1_read_entry: Can't read entry.\n");
     return FALSE;
   }
+  re->size = pod_entry.size;
+  re->offset = pod_entry.offset;
   re->compressed = re->size;
 
   re->offset += POD_DIR_ENTRY_POD1_SIZE;
 
-  s_strncpy(&(re->name), name, POD_DIR_ENTRY_POD1_SIZE);
+  s_strncpy(&(re->name), pod_entry.name, POD_DIR_ENTRY_POD1_FILENAME_SIZE);
   return TRUE;
 }
 
-bool_t pod_write_entry(FILE * file, resentry_t * re)
+bool_t epd_read_entry(FILE * file, resentry_t * re)
 {
-  char name[POD_DIR_ENTRY_NAME_SIZE];
-
-  if (strlen(re->name) > RES_ENTRY_NAME_SIZE)
+  epd_entry_t pod_entry;
+  
+  if (readf(file, "cnlnln", pod_entry.name, POD_DIR_ENTRY_EPD_FILENAME_SIZE,
+                            &(pod_entry.size), POD_DIR_ENTRY_SIZE_SIZE,
+			    &(pod_entry.offset), POD_DIR_ENTRY_OFFSET_SIZE,
+			    &(pod_entry.timestamp), POD_DIR_ENTRY_TIMESTAMP_SIZE,
+			    &(pod_entry.checksum), POD_DIR_ENTRY_CHECKSUM_SIZE) != OK)
   {
-    fprintf(stderr, "res_write_entry: Name too long for entry.\n");
+    fprintf(stderr, "epd_read_entry: Can't read entry.\n");
     return FALSE;
   }
-  strncpy(name, re->name, RES_ENTRY_NAME_SIZE);
+  re->size = pod_entry.size;
+  re->offset = pod_entry.offset;
+  re->time = pod_entry.timestamp;
 
+  re->compressed = re->size;
 
-  if (writef(file, "c12l4l4",
-             name, re->offset - RES_ENTRY_SIZE, re->size) != OK)
+  re->offset += POD_DIR_ENTRY_EPD_SIZE;
+
+  s_strncpy(&(re->name), pod_entry.name, POD_DIR_ENTRY_EPD_FILENAME_SIZE);
+  return TRUE;
+}
+
+bool_t pod2_read_entry(FILE * file, resentry_t * re)
+{
+  pod2_entry_t pod_entry;
+  
+  if (readf(file, "cnlnln", pod_entry.name, POD_DIR_ENTRY_POD1_FILENAME_SIZE,
+                            &(pod_entry.size), POD_DIR_ENTRY_SIZE_SIZE,
+			    &(pod_entry.offset), POD_DIR_ENTRY_OFFSET_SIZE) != OK)
   {
-    fprintf(stderr, "res_write_entry: Can't write entry.\n");
+    fprintf(stderr, "pod1_read_entry: Can't read entry.\n");
+    return FALSE;
+  }
+  re->size = pod_entry.size;
+  re->offset = pod_entry.offset;
+  re->compressed = re->size;
+
+  re->offset += POD_DIR_ENTRY_POD2_SIZE;
+
+  s_strncpy(&(re->name), pod2_entry.name, POD_DIR_ENTRY_POD2_FILENAME_SIZE);
+  return TRUE;
+}
+
+bool_t pod1_write_entry(FILE * file, resentry_t * re)
+{
+  pod1_entry_t pod_entry;
+  pod_entry.size = re->size;
+  pod_entry.offset = re->offset;
+
+  if (strlen(re->name) > POD_DIR_ENTRY_POD1_FILENAME_SIZE)
+  {
+    fprintf(stderr, "pod1_write_entry: Name too long for entry.\n");
+    return FALSE;
+  }
+  strncpy(pod_entry.name, re->name, POD_DIR_ENTRY_POD1_FILENAME_SIZE);
+
+  if (writef(file, "cnlnln",
+             pod_entry.name, POD_DIR_ENTRY_POD1_FILENAME_SIZE,
+	     re->size, re->offset - POD1_ENTRY_SIZE) != OK)
+  {
+    fprintf(stderr, "pod1_write_entry: Can't write entry.\n");
+    return FALSE;
+  }
+  return TRUE;
+}
+
+
+bool_t epd_write_entry(FILE * file, resentry_t * re)
+{
+  eod_entry_t pod_entry;
+  pod_entry.size = re->size;
+  pod_entry.offset = re->offset;
+  pod_entry.timestamp = re->time ? re->time : POD_ENTRY_TIMESTAMP_DEFAULT;
+  pod_entry.checksum = POD_ENTRY_CHECKSUM_DEFAULT;
+
+  if (strlen(re->name) > POD_DIR_ENTRY_EPD_FILENAME_SIZE)
+  {
+    fprintf(stderr, "epd_write_entry: Name too long for entry.\n");
+    return FALSE;
+  }
+  strncpy(pod_entry.name, re->name, POD_DIR_ENTRY_EPD_FILENAME_SIZE);
+
+  if (writef(file, "cnlnln",
+             pod_entry.name, POD_DIR_ENTRY_EPD_FILENAME_SIZE,
+	     re->size, re->offset - EPD_ENTRY_SIZE) != OK)
+  {
+    fprintf(stderr, "epd_write_entry: Can't write entry.\n");
     return FALSE;
   }
   return TRUE;
