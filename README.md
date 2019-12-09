@@ -86,16 +86,19 @@ Credits
 [stupin/pup]: https://stupin.su/git/stupin/pup "Vladimir Alekseyevich Stupins"
 
 Related projects with similar features and information about the POD file format:
-- [physfs][]
 - [podextract][]
+- [QuickBMS][]
+- [physfs][]
 - [jtrfp][]
 - [DragonUnPACKer][]
 - [Ghostbusters Unpack][]
 - [Game Extractor][]
 - [XeNTaX Game Discussion Tools Blog][]
+- [Game Archive UnPacker PRO][]
 
-[physfs]: https://github.com/jopadan/physfs
 [podextract]: https://github.com/ghoost82/podextract 
+[QuickBMS]: https://aluigi.altervista.org/quickbms.htm
+[physfs]: https://github.com/jopadan/physfs
 [jtrfp]: https://github.com/jtrfp/jtrfp
 [DragonUnPACKer]: https://github.com/elbereth/DragonUnPACKer
 [Ghostbusters Unpack]: http://svn.gib.me/public/ghostbusters/trunk/
