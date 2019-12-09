@@ -18,7 +18,7 @@ typedef int8_t                               pod_char_t
 #define POD_IDENT_TYPE_SIZE                  (EPD + 1)                     /* number of POD format types    */
 #define POD_HEADER_CHECKSUM_DEFAULT          0x44424247                    /* default checksum of POD file  */
 #define POD_ENTRY_CHECKSUM_DEFAULT           0x20444542                    /* default checksum of POD entry */
-#define POD_ENTRY_TIMESTAMP_DEFAULT          0x42494720                   /* default timestamp of POD entry */
+#define POD_ENTRY_TIMESTAMP_DEFAULT          0x42494720                    /* default timestamp of POD entry */
 #define POD_HEADER_UNKNOWN10C_DEFAULT        0x58585858			   /* default value of unknown10c   */
 /* map pod ident type enum id to file magic ident null terminated string */
 char POD_IDENT[POD_IDENT_TYPE_SIZE][POD_IDENT_SIZE + 1] = { "\0POD1", "POD2\0", "POD3\0", "POD4\0", "POD5\0", "dtxe\0" };
@@ -230,7 +230,8 @@ typedef struct pod_header_epd_s
                                  POD_DIR_ENTRY_SIZE_SIZE + \
 				 POD_DIR_ENTRY_OFFSET_SIZE + \
 				 POD_DIR_ENTRY_TIMESTAMP_SIZE + \
-				 POD_DIR_ENTRY_CHECKSUM_SIZE)
+				 POD_DIR_ENTRY_CHECKSUM_SIZE + \
+				 POD_DIR_ENTRY_FILENAME_SIZE)
 
 #define POD_DIR_ENTRY_POD3_SIZE POD_DIR_ENTRY_POD2_SIZE
 
@@ -241,7 +242,8 @@ typedef struct pod_header_epd_s
 				 POD_DIR_ENTRY_UNCOMPRESSED_SIZE + \
 				 POD_DIR_ENTRY_COMPRESSION_LEVEL_SIZE + \
 				 POD_DIR_ENTRY_TIMESTAMP_SIZE + \
-				 POD_DIR_ENTRY_CHECKSUM_SIZE)
+				 POD_DIR_ENTRY_CHECKSUM_SIZE + \
+				 POD_DIR_ENTRY_FILENAME_SIZE)
 
 #define POD_DIR_ENTRY_POD5_SIZE POD_DIR_ENTRY_POD4_SIZE
 
@@ -284,7 +286,6 @@ typedef struct pod3_entry_s {
 	pod_number_t offset;
 	pod_number_t timestamp;
 	pod_number_t checksum;
-	pod_char_t name[POD_DIR_ENTRY_FILENAME_SIZE];
 } pod3_entry_t;
 
 typedef struct pod4_entry_s {
@@ -295,7 +296,6 @@ typedef struct pod4_entry_s {
 	pod_number_t compression_level;
 	pod_number_t timestamp;
 	pod_number_t checksum;
-	pod_char_t name[POD_DIR_ENTRY_FILENAME_SIZE];
 } pod4_entry_t;
 
 typedef struct pod5_entry_s {
@@ -306,7 +306,6 @@ typedef struct pod5_entry_s {
 	pod_number_t compression_level;
 	pod_number_t timestamp;
 	pod_number_t checksum;
-	pod_char_t name[POD_DIR_ENTRY_FILENAME_SIZE];
 } pod5_entry_t;
 
 typedef struct pod_dir_entry_s {
@@ -428,7 +427,7 @@ bool_t epd_read_entry(FILE * file, resentry_t * re)
   if (readf(file, "cnlnln", pod_entry.name, POD_DIR_ENTRY_EPD_FILENAME_SIZE,
                             &(pod_entry.size), POD_DIR_ENTRY_SIZE_SIZE,
 			    &(pod_entry.offset), POD_DIR_ENTRY_OFFSET_SIZE,
-			    &(pod_entry.timestamp), POD_DIR_ENTRY_TIMESTAMP_SIZE,
+			    &(pod_entry.timestamp), POD_DIR                              _ENTRY_TIMESTAMP_SIZE,
 			    &(pod_entry.checksum), POD_DIR_ENTRY_CHECKSUM_SIZE) != OK)
   {
     fprintf(stderr, "epd_read_entry: Can't read entry.\n");
@@ -450,15 +449,49 @@ bool_t pod2_read_entry(FILE * file, resentry_t * re)
 {
   pod2_entry_t pod_entry;
   
-  if (readf(file, "cnlnln", pod_entry.name, POD_DIR_ENTRY_POD1_FILENAME_SIZE,
-                            &(pod_entry.size), POD_DIR_ENTRY_SIZE_SIZE,
-			    &(pod_entry.offset), POD_DIR_ENTRY_OFFSET_SIZE) != OK)
+  if (readf(file, "lnlnlnlnlncn", 
+  			      &(pod_entry.path_offset, POD_DIR_ENTRY_PATH_OFFSET_SIZE,
+                              &(pod_entry.size), POD_DIR_ENTRY_SIZE_SIZE,
+			      &(pod_entry.offset), POD_DIR_ENTRY_OFFSET_SIZE,
+			      &(pod_entry.timestamp), POD_DIR_ENTRY_TIMESTAMP_SIZE,
+			      &(pod_entry.checksum), POD_DIR_ENTRY_CHECKSUM_SIZE,
+  			      &(pod_entry.name), POD_DIR_ENTRY_FILENAME_SIZE) != OK)
   {
     fprintf(stderr, "pod1_read_entry: Can't read entry.\n");
     return FALSE;
   }
+
   re->size = pod_entry.size;
   re->offset = pod_entry.offset;
+  re->time = pod_ent
+  re->compressed = re->size;
+
+  re->offset += POD_DIR_ENTRY_POD2_SIZE;
+
+  s_strncpy(&(re->name), pod2_entry.name, POD_DIR_ENTRY_POD2_FILENAME_SIZE);
+  return TRUE;
+}
+
+bool_t pod2_read_entry(FILE * file, resentry_t * re)
+{
+  pod2_entry_t pod_entry;
+  
+  if (readf(file, "lnlnlnlnlncn", 
+  			      &(pod_entry.path_offset, POD_DIR_ENTRY_PATH_OFFSET_SIZE,
+                              &(pod_entry.size), POD_DIR_ENTRY_SIZE_SIZE,
+			      &(pod_entry.offset), POD_DIR_ENTRY_OFFSET_SIZE,
+			      &(pod_entry.timestamp), POD_DIR_ENTRY_TIMESTAMP_SIZE,
+			      &(pod_entry.checksum), POD_DIR_ENTRY_CHECKSUM_SIZE) != OD)
+	
+  			      &(pod_entry.name), POD_DIR_ENTRY_FILENAME_SIZE) != OK)
+  {
+    fprintf(stderr, "pod1_read_entry: Can't read entry.\n");
+    return FALSE;
+  }
+
+  re->size = pod_entry.size;
+  re->offset = pod_entry.offset;
+  re->time = pod_ent
   re->compressed = re->size;
 
   re->offset += POD_DIR_ENTRY_POD2_SIZE;
@@ -511,6 +544,31 @@ bool_t epd_write_entry(FILE * file, resentry_t * re)
 	     re->size, re->offset - EPD_ENTRY_SIZE) != OK)
   {
     fprintf(stderr, "epd_write_entry: Can't write entry.\n");
+    return FALSE;
+  }
+  return TRUE;
+}
+
+bool_t pod2_write_entry(FILE * file, resentry_t * re)
+{
+  pod2_entry_t pod_entry;
+  pod_entry.path_offset;
+  pod_entry.size = re->size;
+  pod_entry.offset = re->offset;
+  pod_entry.timestamp = re->time ? re->time : POD_ENTRY_TIMESTAMP_DEFAULT;
+  pod_entry.checksum = POD_ENTRY_CHECKSUM_DEFAULT;
+  if (strlen(re->name) > POD_DIR_ENTRY_FILENAME_SIZE)
+  {
+    fprintf(stderr, "pod2_write_entry: Name too long for entry.\n");
+    return FALSE;
+  }
+  strncpy(pod_entry.name, re->name, POD_DIR_ENTRY_EPD_FILENAME_SIZE);
+
+  if (writef(file, "cnlnlnln",
+             pod_entry.name, POD_DIR_ENTRY_FILENAME_SIZE,
+	     re->size, re->offset - POD2_ENTRY_SIZE) != OK)
+  {
+    fprintf(stderr, "pod2_write_entry: Can't write entry.\n");
     return FALSE;
   }
   return TRUE;
@@ -794,6 +852,100 @@ bool_t pod_add_resource(restable_t * rt, size_t i)
     s_free(&filename);
     return FALSE;
   }
+  s_free(&filename);
+  return TRUE;
+}
+
+bool_t pod3_read_header(restable *rt, pod3_header_t* header)
+{
+  if(readf(rt->file, "cnlncnlnlnlnlncncnlnlnlnlnlnln", header->ident, POD_HEADER_IDENT_SIZE,
+                                                       &(header->checksum), POD_HEADER_CHECKSUM_SIZE,
+						       header->comment, POD_HEADER_COMMENT_SIZE,
+						       &(header->file_count), POD_HEADER_FILE_COUNT_SIZE,
+						       &(header->audit_file_count), POD_HEADER_AUDIT_FILE_COUNT_SIZE,
+						       &(header->revision), POD_HEADER_REVISION_SIZE,
+						       &(header->priority), POD_HEADER_PRIORITY_SIZE,
+						       header->author, POD_HEADER_AUTHOR_SIZE,
+						       header->copyright, POD_HEADER_AUTHOR_SIZE,
+						       &(header->index_offset, POD_HEADER_INDEX_OFFSET_SIZE,
+						       &(header->unknown10c), POD_HEADER_UNKNOWN10C_SIZE,
+						       &(header->size_index), POD_HEADER_SIZE_INDEX_SIZE,
+						       &(header->unknown114), POD_HEADER_UNKNOWN114_SIZE,
+						       &(header->unknown118), POD_HEADER_UNKNOWN118_SIZE,
+						       &(header->unknown11c), POD_HEADER_UNKNOWN11C_SIZE) != OK))
+  	return FALSE;
+  return TRUE;
+}
+
+bool_t pod3_add_resource(restable_t * rt, size_t i)
+{
+  char *filename;
+  pod3_header_t header;
+
+  if (writec(rt->file, NULL, RES_ENTRY_SIZE) != OK)
+  {
+    fprintf(stderr, "pod_add_resource: Can't write header of entry #%zu.\n", i);
+    s_free(&filename);
+    return FALSE;
+  }
+
+typedef struct pod_header_pod3_s
+{
+	pod_char_t ident[POD_HEADER_IDENT_SIZE];
+	pod_number_t checksum;
+	pod_char_t comment[POD_HEADER_COMMENT_SIZE];
+	pod_number_t file_count;
+	pod_number_t audit_file_count;
+	pod_number_t revision;
+	pod_number_t priority;
+	pod_char_t author[POD_HEADER_AUTHOR_SIZE];
+	pod_char_t copyright[POD_HEADER_COPYRIGHT_SIZE];
+	pod_number_t index_offset;
+	pod_number_t unknown10c;
+	pod_number_t size_index;
+	pod_number_t unknown114;
+	pod_number_t unknown118;
+	pod_number_t unknown11C;
+} pod_header_pod3_t;
+
+  
+  if (pod3_header_read(rt, header) == FALSE)
+  {
+  	fprintf(stderr, "pod3_header_read: Can't read header of POD3 file \"%s\".\n", 
+	        rt->file.filename);
+	return FALSE;
+  }
+
+  rt->set_number(rt, header.file_count);
+  seekf(rt->file, header->index_offset + (i * DIR_ENTRY_SIZE), SEEK_SET);
+  if(readf(rt->file, "ln", header->entries[i].path_offset, POD_HEADER_PATH_OFFSET_SIZE) != OK)
+  {
+  	fprintf(stderr, "readf: Can't read path_offset of POD3 entry \"%s\".\n",
+		rt->file.filename);
+	return FALSE;
+  }
+
+  seekf(rt->file, header->index_offset + (header->file_count * DIR_ENTRY_SIZE) + header->entries[i].path_offset, SEEK_SET);
+  if(readf(rt->file, "cn", header->entries[i].filename, POD_DIR_ENTRY_FILENAME_SIZE) != OK)
+  {
+  	fprintf(stderr, "readf: Can't read filename of POD3 entry of file \"%s\".\n",
+	        rt->file.filename);
+  }
+
+
+  filename = NULL;
+  rt->entries[i].offset = ftell(rt->file);
+  s_strcpy(&filename, rt->basepath);
+  s_strcat(&filename, rt->entries[i].filename);
+
+  if (fadd(rt->file, filename, &(rt->entries[i].size)) == FALSE)
+  {
+    fprintf(stderr, "pod_add_resource: Can't open or read file \"%s\".\n",
+            filename);
+    s_free(&filename);
+    return FALSE;
+  }
+
   s_free(&filename);
   return TRUE;
 }
