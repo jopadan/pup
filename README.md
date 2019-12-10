@@ -70,7 +70,7 @@ List of formats to be implemented:
             POD3: Fly! 2, Blood Rayne 1 & 2, BlowOut, Aeon Flux, Metal Slug Anthology
             POD4: The King of Fighters Collection: The Orochi Saga, Samurai Shodown Anthology
             POD5: Ghostbusters: The Video Game
-	    POD6: Ghostbusters: The Video Game Remastered
+            POD6: Ghostbusters: The Video Game Remastered
             EPD/Extended POD: Fly!
 
 Known issues
