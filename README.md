@@ -94,7 +94,7 @@ Related projects with similar features and information about the POD file format
 - [Ghostbusters Unpack][]
 - [Game Extractor][]
 - [XeNTaX Game Discussion Tools Blog][]
-- [Game Archive UnPacker PRO][]
+- [ZenHAX][]
 
 [podextract]: https://github.com/ghoost82/podextract 
 [QuickBMS]: https://aluigi.altervista.org/quickbms.htm
@@ -104,6 +104,7 @@ Related projects with similar features and information about the POD file format
 [Ghostbusters Unpack]: http://svn.gib.me/public/ghostbusters/trunk/
 [Game Extractor]: http://www.watto.org
 [XeNTaX Game Discussion Tools Blog]: https://forum.xentax.com/blog/
+[ZenHAX]: https://zenhax.com/
 
 (C) 2010-2013 Vladimir Alekseyevich Stupin <vladimir@stupin.su>
 
