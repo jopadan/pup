@@ -1,5 +1,5 @@
-#ifndef _POD4_H
-#define _POD4_H
+#ifndef __POD4__
+#define __POD4__
 
 #include "pod_common.h"
 

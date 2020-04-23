@@ -1,5 +1,5 @@
-#ifndef _EPD_H
-#define _EPD_H
+#ifndef __EPD__
+#define __EPD__
 
 #include "pod_common.h"
 

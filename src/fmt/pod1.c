@@ -9,6 +9,7 @@
 				 POD_DIR_ENTRY_OFFSET_SIZE)
 
 #define POD_DIR_ENTRY_POD1_FILENAME_SIZE     32
+
 /* POD1 header data structure */
 typedef struct pod_header_pod1_s
 {

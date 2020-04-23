@@ -1,5 +1,5 @@
-#ifndef _POD_COMMON_H
-#define _POD_COMMON_H
+#ifndef __POD_COMMON__
+#define __POD_COMMON__
 
 #include <stdint.h>
 
