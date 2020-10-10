@@ -1898,10 +1898,10 @@ binrw_error_t scans(FILE * file, char **s, const char *terms, int *term)
 }
 
 /*
-Написано по мотивам следующих материалов:
+Based on the following materials:
 http://forums.devnetwork.net/viewtopic.php?f=29&t=28164
 
-Дополнительно:
+Additionally:
 http://www.vsft.com/hal/dostime.htm
 */
 
@@ -1926,9 +1926,9 @@ time_t dos2unix_timestamp(const size_t timestamp)
   t.tm_sec = DOS_SECONDS_SCALE * (timestamp & DOS_SECONDS_MASK);
   t.tm_min = (timestamp >> DOS_MINUTES_SHIFT) & DOS_MINUTES_MASK;
   t.tm_hour = (timestamp >> DOS_HOURS_SHIFT) & DOS_HOURS_MASK;
-  /* В DOS и Unix дни считаются с 1 */
+  /* In DOS and Unix are counted from 1 */
   t.tm_mday = (timestamp >> DOS_DAYS_SHIFT) & DOS_DAYS_MASK;
-  /* В DOS месяцы считаются с 1, а в Unix - с 0 */
+  /* DOS counts mounths from 1, Unix counts from 0 */
   t.tm_mon = ((timestamp >> DOS_MONTHS_SHIFT) & DOS_MONTHS_MASK) - 1;
   t.tm_year =
     ((timestamp >> DOS_YEARS_SHIFT) & DOS_YEARS_MASK) + DOS_YEARS_OFFSET;
@@ -1955,9 +1955,9 @@ time_t unix2dos_timestamp(const time_t timestamp)
 
   t->tm_year -= DOS_YEARS_OFFSET;
   ts = (t->tm_year << DOS_YEARS_SHIFT) |
-    /* В DOS месяцы считаются с 1, а в Unix - с 0 */
+  /* DOS counts mounths from 1, Unix counts from 0 */
     ((t->tm_mon << DOS_MONTHS_SHIFT) + 1) |
-    /* В DOS и Unix дни считаются с 1 */
+  /* In DOS and Unix are counted from 1 */
     (t->tm_mday << DOS_DAYS_SHIFT) |
     (t->tm_hour << DOS_HOURS_SHIFT) |
     (t->tm_min << DOS_MINUTES_SHIFT) | (t->tm_sec / DOS_SECONDS_SCALE);
