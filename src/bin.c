@@ -9,26 +9,26 @@
 #include <limits.h>
 #include "bin.h"
 
-bool_t fextract(const char *dst_filename, FILE * src, size_t size)
+bool_t extractfile(const char *dst_filename, FILE * src, size_t size)
 {
   FILE *dst;
   int ch;
 
   if (dst_filename == NULL)
   {
-    fprintf(stderr, "fextract: dst_filename is NULL pointer.\n");
+    fprintf(stderr, "extractfile: dst_filename is NULL pointer.\n");
     return FALSE;
   }
   if (src == NULL)
   {
-    fprintf(stderr, "fextract: src file is NULL pointer.\n");
+    fprintf(stderr, "extractfile: src file is NULL pointer.\n");
     return FALSE;
   }
 
   dst = fopen(dst_filename, "wb");
   if (dst == NULL)
   {
-    fprintf(stderr, "fextract: Can't create file \"%s\".\n", dst_filename);
+    fprintf(stderr, "extractfile: Can't create file \"%s\".\n", dst_filename);
     return FALSE;
   }
   while (size > 0)
@@ -36,13 +36,13 @@ bool_t fextract(const char *dst_filename, FILE * src, size_t size)
     ch = fgetc(src);
     if (ch == EOF)
     {
-      fprintf(stderr, "fextract: Can't read source file.\n");
+      fprintf(stderr, "extractfile: Can't read source file.\n");
       fclose(dst);
       return FALSE;
     }
     if (fputc(ch, dst) == EOF)
     {
-      fprintf(stderr, "fextract: Can't write destination file \"%s\".\n",
+      fprintf(stderr, "extractfile: Can't write destination file \"%s\".\n",
               dst_filename);
       fclose(dst);
       return FALSE;
@@ -53,7 +53,7 @@ bool_t fextract(const char *dst_filename, FILE * src, size_t size)
   return TRUE;
 }
 
-bool_t fadd(FILE * dst, const char *src_filename, size_t * psize)
+bool_t addfile(FILE * dst, const char *src_filename, size_t * psize)
 {
   FILE *src;
   int ch;
@@ -61,19 +61,19 @@ bool_t fadd(FILE * dst, const char *src_filename, size_t * psize)
 
   if (dst == NULL)
   {
-    fprintf(stderr, "fadd: dst file is NULL pointer.\n");
+    fprintf(stderr, "addfile: dst file is NULL pointer.\n");
     return FALSE;
   }
   if (src_filename == NULL)
   {
-    fprintf(stderr, "fadd: src_filename is NULL pointer.\n");
+    fprintf(stderr, "addfile: src_filename is NULL pointer.\n");
     return FALSE;
   }
 
   src = fopen(src_filename, "rb");
   if (src == NULL)
   {
-    fprintf(stderr, "fadd: Can't open file \"%s\".\n", src_filename);
+    fprintf(stderr, "addfile: Can't open file \"%s\".\n", src_filename);
     return FALSE;
   }
   size = 0;
@@ -81,7 +81,7 @@ bool_t fadd(FILE * dst, const char *src_filename, size_t * psize)
   {
     if (fputc(ch, dst) == EOF)
     {
-      fprintf(stderr, "fadd: Can't write destination file.\n");
+      fprintf(stderr, "addfile: Can't write destination file.\n");
       fclose(src);
       return FALSE;
     }

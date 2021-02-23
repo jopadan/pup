@@ -1,7 +1,7 @@
 #ifndef __POD6__
 #define __POD6__
 
-#include "pod_common.h"
+#include "pod.h"
 
 bool_t is_pod6(restable_t * rt);
 

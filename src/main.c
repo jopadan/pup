@@ -11,9 +11,7 @@
 #include "pack.h"
 #include "pack2.h"
 #include "wad23.h"
-#ifdef PODFMT
 #include "pod.h"
-#endif
 #include "res.h"
 #include "dpk4.h"
 #include "dat.h"
@@ -275,7 +273,6 @@ plugin_t plugins[] = {
    &wad23_prepare_dir,
    &wad23_add_resource,
    &wad3_write_dir},
-#ifdef PODFMT
   {
    "pod1",
    "POD1-file of Terminal Velocity",
@@ -295,7 +292,7 @@ plugin_t plugins[] = {
 
    &pod1_fill_name,
    &pod1_prepare_dir,
-   &pod1_add_resourcec,
+   &pod1_add_resource,
    &pod1_write_dir},
   {
    "pod2",
@@ -316,7 +313,7 @@ plugin_t plugins[] = {
 
    &pod2_fill_name,
    &pod2_prepare_dir,
-   &pod2_add_resourcec,
+   &pod2_add_resource,
    &pod2_write_dir},
   {
    "pod3",
@@ -337,7 +334,7 @@ plugin_t plugins[] = {
 
    &pod3_fill_name,
    &pod3_prepare_dir,
-   &pod3_add_resourcec,
+   &pod3_add_resource,
    &pod3_write_dir},
   {
    "pod4",
@@ -358,7 +355,7 @@ plugin_t plugins[] = {
 
    &pod4_fill_name,
    &pod4_prepare_dir,
-   &pod4_add_resourcec,
+   &pod4_add_resource,
    &pod4_write_dir},
   {
    "pod5",
@@ -379,7 +376,7 @@ plugin_t plugins[] = {
 
    &pod5_fill_name,
    &pod5_prepare_dir,
-   &pod5_add_resourcec,
+   &pod5_add_resource,
    &pod5_write_dir},
   {
    "epd",
@@ -400,9 +397,8 @@ plugin_t plugins[] = {
 
    &epd_fill_name,
    &epd_prepare_dir,
-   &epd_add_resourcec,
+   &epd_add_resource,
    &epd_write_dir},
-#endif
   {
    "res",
    "RES-file of Comanche 3",

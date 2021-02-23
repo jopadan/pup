@@ -73,7 +73,7 @@ bool_t wad23_fill_name(resentry_t * re)
   s_ext(&ext, re->filename, SYS_PATH_DELIM);
   if (ext[0] != '.')
   {
-    fprintf(stderr, "wad23_fill_name: filename haven't extension.\n");
+    fprintf(stderr, "wad23_fill_name: filename has no extension.\n");
     re->type = 0;
   }
   else

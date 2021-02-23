@@ -303,7 +303,7 @@ bool_t rt_add_resource(restable_t * rt, size_t i)
   s_strcpy(&filename, rt->basepath);
   s_strcat(&filename, rt->entries[i].filename);
   rt->entries[i].offset = ftell(rt->file);
-  if (fadd(rt->file, filename, &(rt->entries[i].size)) == FALSE)
+  if (addfile(rt->file, filename, &(rt->entries[i].size)) == FALSE)
   {
     fprintf(stderr, "rt_add_resource: Can't open or read file \"%s\".\n",
             filename);
@@ -330,7 +330,7 @@ bool_t rt_extract_resource(restable_t * rt, size_t i)
   s_strcpy(&filename, rt->basepath);
   s_strcat(&filename, rt->entries[i].filename);
   fseek(rt->file, rt->entries[i].offset, SEEK_SET);
-  if (fextract(filename, rt->file, rt->entries[i].size) == FALSE)
+  if (extractfile(filename, rt->file, rt->entries[i].size) == FALSE)
   {
     fprintf(stderr, "rt_extract_resource: Can't create or write file \"%s\".\n",
             filename);

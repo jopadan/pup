@@ -19,9 +19,9 @@ comdec_t comdec_pack2;
 comdec_t comdec_lzss;
 comdec_t comdec_dat;
 
-bool_t c_fadd(FILE * dst, const char *src_filename, size_t * size,
+bool_t c_addfile(FILE * dst, const char *src_filename, size_t * size,
               size_t * compressed, comdec_t * comdec, int level);
-bool_t c_fextract(const char *dst_filename, FILE * src, size_t size,
+bool_t c_extractfile(const char *dst_filename, FILE * src, size_t size,
                   size_t compressed, comdec_t * comdec);
 
 #endif

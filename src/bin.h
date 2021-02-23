@@ -33,8 +33,8 @@ typedef enum binrw_error_e
 #define SYS_PATH_DELIM	'/'
 #define SYS_PATH_SDELIM	"/"
 
-bool_t fextract(const char *dst_filename, FILE * src, size_t size);
-bool_t fadd(FILE * dst, const char *src_filename, size_t * psize);
+bool_t extractfile(const char *dst_filename, FILE * src, size_t size);
+bool_t addfile(FILE * dst, const char *src_filename, size_t * psize);
 
 void *loadfile(const char *filename, size_t * psize);
 bool_t savefile(const char *filename, const void *data, size_t size);

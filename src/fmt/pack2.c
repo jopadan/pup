@@ -97,7 +97,7 @@ bool_t pack2_extract_resource(restable_t * rt, size_t i)
   s_strcpy(&filename, rt->basepath);
   s_strcat(&filename, rt->entries[i].filename);
   fseek(rt->file, rt->entries[i].offset, SEEK_SET);
-  if (c_fextract(filename, rt->file, rt->entries[i].size,
+  if (c_extractfile(filename, rt->file, rt->entries[i].size,
                  rt->entries[i].compression ==
                  1 ? rt->entries[i].compressed : 0, &comdec_pack2) == FALSE)
   {
@@ -134,7 +134,7 @@ bool_t pack2_add_resource(restable_t * rt, size_t i)
   rt->entries[i].offset = ftell(rt->file);
   s_strcpy(&filename, rt->basepath);
   s_strcat(&filename, rt->entries[i].filename);
-  if (c_fadd(rt->file, filename, &(rt->entries[i].size),
+  if (c_addfile(rt->file, filename, &(rt->entries[i].size),
              &(rt->entries[i].compressed), &comdec_pack2, 9) == FALSE)
   {
     fprintf(stderr, "pack2_add_resource: Can't add entry #%zu.\n", i);

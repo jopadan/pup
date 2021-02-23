@@ -1,15 +1,15 @@
 #ifndef __POD5__
 #define __POD5__
 
-#include "pod_common.h"
+#include "pod5.h"
 
 bool_t is_pod5(restable_t * rt);
 
 #define POD5_SUBDIRS FALSE
-#define ROD5_MERGE FALSE
+#define POD5_MERGE FALSE
 #define POD5_META FALSE
 #define POD5_TIME FALSE
-#define PDO5_PAGE 1
+#define POD5_PAGE 1
 
 bool_t pod5_read_dir(restable_t * rt);
 bool_t pod5_fill_filename(resentry_t * re);

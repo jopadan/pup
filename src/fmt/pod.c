@@ -5,44 +5,8 @@
 
 #include "bin.h"
 #include "pod.h"
-typedef struct resentry_s
-{
-  size_t entry;                 /* Номер ресурса в исходном файле-пачки
-                                   (важно на случай, если сортировка поменяет
-                                   порядок записей) */
 
-  char *filename;               /* Имя файла на диске */
-
-  char *name;                   /* Имя ресурса */
-  size_t offset;                /* Смещение ресурса */
-  size_t size;                  /* Размер ресурса */
-
-  size_t compressed;            /* Сжатый размер ресурса */
-  size_t compression;           /* Номер метода сжатия */
-
-  time_t time;                  /* Дополнительные атрибуты ресурса - время */
-  size_t type;                  /* Дополнительные атрибуты ресурса */
-  size_t id;                    /* Дополнительные атрибуты ресурса */
-
-  ssize_t copyof;               /* -1, если этот ресурс не является копиеей другого,
-                                   иначе - номер ресурса-оригинала */
-} resentry_t;
-
-typedef struct restable_s
-{
-  char *filename;               /* Имя файла-пачки */
-  char *basepath;               /* Базовый каталог для извлечения или поиска файлов */
-  char *meta;                   /* Файл с мета-данными */
-  FILE *file;                   /* Файл-пачка */
-
-  size_t number;                /* Количество ресурсов в таблице */
-  size_t maxnumber;             /* Максимальное количество ресурсов в таблице,
-                                 * которое можно разместить в entries, не выполняя вызов realloc */
-
-  resentry_t *entries;          /* Таблица ресурсов */
-} restable_t;
-
-
+/*
 typedef struct pod_dir_entry_s {
 	pod_char_t* filename[POD_FILENAME_SIZE];
 	pod_number_t file_path_offset;
@@ -59,25 +23,26 @@ bool_t pod_dir_entry_write(FILE* file, pod_dir_entry_t* src, int pod_type)
 	switch(pod_type)
 	{
 		case POD1:
-			pod1_write_entry(file, src);
+			pod1_write_dir(file, src);
 		case POD2:
-			pod2_write_entry(file, src);
+			pod2_write_dir(file, src);
 		case POD3:
-			pod3_write_entry(file, src);
+			pod3_write_dir(file, src);
 		case POD4:
-			pod4_write_entry(file, src);
+			pod4_write_dir(file, src);
 		case POD5:
-			pod5_write_entry(file, src);
+			pod5_write_dir(file, src);
 		case POD6:
-			pod6_write_entry(file, src);
+			pod6_write_dir(file, src);
 		case EPD:
-			epd_write_entry(file, src);
+			epd_write_dir(file, src);
 		default:
 		break;
 	}
 
 	return FALSE;
 }
+*/
 pod_char_t* pod_type_to_file_ext(int pod_type)
 {
 	switch(pod_type)
@@ -91,21 +56,54 @@ pod_char_t* pod_type_to_file_ext(int pod_type)
 	return FALSE;
 }
 
-bool_t resentry_to_pod_dir_entry(pod_dir_entry_t* dst, resentry_t *res)
+bool_t pod_fill_name(resentry_t * re)
+{
+  char *ext;
+
+  ext = NULL;
+
+  s_name(&(re->name), re->filename, SYS_PATH_DELIM);
+  s_strupper(re->name);
+
+  s_ext(&ext, re->filename, SYS_PATH_DELIM);
+  if (ext[0] != '.')
+  {
+    fprintf(stderr, "pod_fill_name: filename has no extension.\n");
+    re->type = 0;
+  }
+  else
+    re->type = atoi(&(ext[1]));
+  s_free(&ext);
+
+  if (strlen(re->name) > POD_ENTRY_NAME_SIZE)
+  {
+    fprintf(stderr, "pod_fill_name: Too long name \"%s\".\n", re->name);
+    return FALSE;
+  }
+  return TRUE;
+}
+
+bool_t resentry_to_pod_dir_entry(pod_dir_entry_t* dst, resentry_t *re)
 {
 	if(!dst)
 		return false;
 
-	strncpy(dst->filename, res->filename, POD_FILENAME_SIZE);
-	dst->file_path_offset = res->file
-	dst->file_size = res->compressed;
-	dst->file_offset = res->offset;
-	dst->file_uncompressed_size = res->size;
-	dst->file_compression_level = res->compression
-	dst->file_timestamp = res->time;
-	// FIXME TODO implement checksum algorithm Adler32, Fletcher or Jeff M
-	dst->file_checksum = 0;
-	dst->type = atoi(pod_type_to_file_ext(pod_type));
+	re->type = atoi(pod_type_to_file_ext(pod_type));
+	for(int i = 0; i < POD_IDENT_TYPE_SIZE; i++)
+	{
+		pod_number_t len = pod_type_filename_size(i);
+		dst->filename[i] = calloc(len, sizeof(pod_char_t));
+		strncpy(dst->filename[i], res->filename, len);
+	}
+
+	dst->file_path_offset = re->file
+	dst->file_size = re->compressed;
+	dst->file_offset = re->offset;
+	dst->file_uncompressed_size = re->size;
+	dst->file_compression_level = re->compression
+	dst->file_timestamp = re->time;
+	dst->file_checksum = pod_crc(res->offset;
+
 	dst->id = id 
 }
 
@@ -150,7 +148,7 @@ bool_t pod_add_resource(restable_t * rt, size_t i)
   rt->entries[i].offset = ftell(rt->file);
   s_strcpy(&filename, rt->basepath);
   s_strcat(&filename, rt->entries[i].filename);
-  if (fadd(rt->file, filename, &(rt->entries[i].size)) == FALSE)
+  if (addfile(rt->file, filename, &(rt->entries[i].size)) == FALSE)
   {
     fprintf(stderr, "pod_add_resource: Can't open or read file \"%s\".\n",
             filename);

@@ -162,7 +162,7 @@ bool_t pod3_add_resource(restable_t * rt, size_t i)
   s_strcpy(&filename, rt->basepath);
   s_strcat(&filename, rt->entries[i].filename);
 
-  if (fadd(rt->file, filename, &(rt->entries[i].size)) == FALSE)
+  if (addfile(rt->file, filename, &(rt->entries[i].size)) == FALSE)
   {
     fprintf(stderr, "pod_add_resource: Can't open or read file \"%s\".\n",
             filename);

@@ -1,15 +1,15 @@
 #ifndef __POD2__
 #define __POD2__
 
-#include "pod_common.h"
+#include "pod.h"
 
 bool_t is_pod2(restable_t * rt);
 
 #define POD2_SUBDIRS FALSE
-#define ROD2_MERGE FALSE
+#define POD2_MERGE FALSE
 #define POD2_META FALSE
 #define POD2_TIME FALSE
-#define PDO2_PAGE 1
+#define POD2_PAGE 1
 
 bool_t pod2_read_dir(restable_t * rt);
 bool_t pod2_fill_filename(resentry_t * re);
