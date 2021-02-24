@@ -24,6 +24,13 @@ Usage
            --savemeta <file> [<meta>]  - only save metadata to specified metafile
            --print <file>    - print technical information to stdout
 
+Dependencies
+------------
+
+[zlib][]
+[libzip][]
+[libpodfmt][]
+
 Building
 --------
 
@@ -38,6 +45,17 @@ Building
 
 Status
 ------
+
+List of supported compression algorithms:
+
+    Supported plugins:
+    zlib   
+    libzip       POD-file entries deflate used in POD4-6
+
+List of supported checksums:
+
+    Supported plugins:
+    crc-ccitt32  CRC variant used in POD-files
 
 List of supported formats:
 
@@ -88,6 +106,8 @@ Credits
 [stupin/pup]: https://stupin.su/git/stupin/pup "Vladimir Alekseyevich Stupins"
 
 Related projects with similar features and information about the POD file format:
+
+- [libpodfmt][]
 - [podextract][]
 - [QuickBMS][]
 - [physfs][]
@@ -95,9 +115,16 @@ Related projects with similar features and information about the POD file format
 - [DragonUnPACKer][]
 - [Ghostbusters Unpack][]
 - [Game Extractor][]
+- [MultiRipper][]
+- [camoto-studio][]
+- [linuxlist][]
+- [ripper6][]
 - [XeNTaX Game Discussion Tools Blog][]
 - [ZenHAX][]
 
+[zlib]: http://www.zlib.net
+[libzip]: https://github.com/nih-at/libzip
+[libpodfmt]: https://github.com/jopadan/libpodfmt
 [podextract]: https://github.com/ghoost82/podextract 
 [QuickBMS]: https://aluigi.altervista.org/quickbms.htm
 [physfs]: https://github.com/jopadan/physfs
@@ -105,6 +132,10 @@ Related projects with similar features and information about the POD file format
 [DragonUnPACKer]: https://github.com/elbereth/DragonUnPACKer
 [Ghostbusters Unpack]: http://svn.gib.me/public/ghostbusters/trunk/
 [Game Extractor]: http://www.watto.org
+[MultiRipper]: https://github.com/matteobaccan/MultiRipper
+[camoto-studio]: https://github.com/Malvineous/camoto-studio
+[linuxlist]: https://github.com/Malvineous/linuxlist
+[ripper6]: https://github.com/Malvineous/ripper6
 [XeNTaX Game Discussion Tools Blog]: https://forum.xentax.com/blog/
 [ZenHAX]: https://zenhax.com/
 
