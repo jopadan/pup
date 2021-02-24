@@ -93,18 +93,19 @@ bool_t resentry_to_pod_dir_entry(pod_dir_entry_t* dst, resentry_t *re)
 	{
 		pod_number_t len = pod_type_filename_size(i);
 		dst->filename[i] = calloc(len, sizeof(pod_char_t));
-		strncpy(dst->filename[i], res->filename, len);
+		strncpy(dst->filename[i], re->filename, len);
 	}
-
-	dst->file_path_offset = re->file
+/*
+	dst->file_path_offset = re->filename
 	dst->file_size = re->compressed;
 	dst->file_offset = re->offset;
 	dst->file_uncompressed_size = re->size;
 	dst->file_compression_level = re->compression
 	dst->file_timestamp = re->time;
-	dst->file_checksum = pod_crc(res->offset;
+	dst->file_checksum = pod_crc(re->offset;
 
 	dst->id = id 
+*/
 }
 
 /* still copy of RES format

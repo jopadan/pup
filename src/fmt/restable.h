@@ -21,7 +21,8 @@ typedef struct resentry_s
 
   size_t compressed;            /* Сжатый размер ресурса */
   size_t compression;           /* Номер метода сжатия */
-  checksum_t checksum;
+  size_t checksum;
+  size_t checksum_type;
   time_t time;                  /* Дополнительные атрибуты ресурса - время */
   size_t type;                  /* Дополнительные атрибуты ресурса */
   size_t id;                    /* Дополнительные атрибуты ресурса */

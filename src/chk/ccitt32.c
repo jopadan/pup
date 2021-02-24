@@ -1,4 +1,4 @@
-#include "crc_ccitt32.h"
+#include "ccitt32.h"
 
 static uint32_t crc_ccitt32_generic(const uint8_t* input_str, size_t num_bytes, uint32_t start_value);
 static void init_crcccitt32_tab( uint32_t poly, uint32_t swapped);
