@@ -7,14 +7,12 @@ set(PROJECT_DESCRIPTION "PUP - game resource Packer/UnPacker written in C")
 include(GNUInstallDirs)
 include(FindPkgConfig)
 
-set(SRCDOR "src")
-
 set(CHECKSUM_SOURCES
-	      src/chk/crc_ccitt32.c
+	      src/chk/ccitt32.c
 )
 
 set(CHECKSUM_INCLUDES
-              src/chk/crc_ccitt32.h
+              src/chk/ccitt32.h
 )
 
 set(COMPRESSION_SOURCES
@@ -50,7 +48,7 @@ set(FORMAT_SOURCES
 	src/fmt/pak.c
 	src/fmt/gob.c
 	src/fmt/grp.c
-	${SRCDOR}/fmt/pod.c
+	src/fmt/pod.c
 	src/fmt/epd.c
 	src/fmt/pod1.c
 	src/fmt/pod2.c

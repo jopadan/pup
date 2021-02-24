@@ -1,5 +1,5 @@
-#ifndef __CRC_CCITT32__
-#define __CRC_CCITT32__
+#ifndef __CCITT32__
+#define __CCITT32__
 
 #include <stdio.h>
 #include <stdlib.h>
