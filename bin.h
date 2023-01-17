@@ -22,12 +22,12 @@ typedef struct buf_s
 
 typedef enum binrw_error_e
 {
-  OK,                           /* Успешное завершение */
-  NOMEM_ERROR,                  /* Не удалось выделить память */
-  READ_ERROR,                   /* Произошла ошибка чтения */
-  WRITE_ERROR,                  /* Произошла ошибка записи */
-  ARG_ERROR,                    /* Передан неправильный аргумент */
-  FORMAT_ERROR                  /* Ошибка в строке формата */
+  OK,                           /* Successfull completion */
+  NOMEM_ERROR,                  /* Failed to allocate memory */
+  READ_ERROR,                   /* Read error occurred */
+  WRITE_ERROR,                  /* Write error occured */
+  ARG_ERROR,                    /* Invalid argument passed */
+  FORMAT_ERROR                  /* Error in format string */
 } binrw_error_t;
 
 #define SYS_PATH_DELIM	'/'
@@ -70,7 +70,7 @@ bool_t is_suffix(const char *s, const char *suffix);
 bool_t cut_prefix(char *s, const char *prefix);
 bool_t cut_suffix(char *s, const char *suffix);
 
-/* Может стоит удалить? */
+/* Мaybe you should delete? */
 bool_t s_cut_prefix(char **pt, const char *s, const char *prefix);
 bool_t s_cut_suffix(char **pt, const char *s, const char *suffix);
 
@@ -104,62 +104,62 @@ bool_t is_equal_blocks(FILE * file, size_t offset0, size_t offset1,
 
 char *binrw_strerror(binrw_error_t error);
 
-/* Читает Little Endian число размером от 1 до 4 байт. */
+/* Reads a Little Endian number between 1 and 4 bytes. */
 binrw_error_t readl(FILE * file, size_t * pnum, size_t len);
 
-/* Читает Big Endian число размером от 1 до 4 байт. */
+/* Reads a Big Endian number between 1 and 4 bytes. */
 binrw_error_t readb(FILE * file, size_t * pnum, size_t len);
 
-/* Пишет Little Endian число размером от 1 до 4 байт,
- * в случае если переданное число не может быть представлено
- * в виде указанного количества байт, завершается с ошибкой.*/
+/* Writes a Little Endian number between 1 and 4 bytes,
+ * in case the transmitted number cannot be presented
+ * as the specified number of bytes, fails. */
 binrw_error_t writel(FILE * file, size_t num, size_t len);
 
-/* Пишет Big Endian число размером от 1 до 4 байт,
- * в случае если переданное число не может быть представлено
- * в виде указанного количества байт, завершается с ошибкой.*/
+/* Writes Big Endian number between 1 and 4 bytes,
+ * in case the transmitted number cannot be presented
+ * as the specified number of bytes, fails. */
 binrw_error_t writeb(FILE * file, size_t num, size_t len);
 
-/* Читает указанное количество байтов в буфер. Если указатель
- * на буфер - NULL, читает байты "в никуда".*/
+/* Reads the specified number of bytes into the buffer. If the pointer
+ * per buffer - NULL, reads bytes "to nowhere".*/
 binrw_error_t readc(FILE * file, uint8_t * buf, size_t len);
 
-/* Пишет указанное количество байтов из буфера. Если указатель
- * на буфер - NULL, пишет нуевые байты.*/
+/* Writes the specified number of bytes into the buffer. If the pointer
+ * per buffer - NULL, writes new bytes.*/
 binrw_error_t writec(FILE * file, uint8_t * buf, size_t len);
 
-/* Читает из файла строку указанного размера. Прежний буфер,
- * если он не равен NULL, освобождается, выделяется буфер
- * нужного размера. Считанные данные дополняются нулевым
- * байтом. Если указатель на указатель на строку - NULL,
- * строка читается "в никуда". */
+/* Reads a line of the specified size from the. If previous
+ * buffer is not NULL, freed allocated buffer of
+ * required size. The read data is padded with a zero
+ * byte. If pointer to pointer to string is NULL,
+ * the line is read "to nowhere". */
 binrw_error_t readsn(FILE * file, char **s, size_t len);
 
-/* Пишет в файл строку указанного размера. Если длина строки
- * больше указанной, функция завершается с ошибкой. */
+/* Writes a string of the specified size to the file. If the string length
+ * is greater than the specified value, the function terminates with an error. */
 binrw_error_t writesn(FILE * file, char *s, size_t len);
 
-/* Читает из файла Pascal-строку. Прежний буфер,
- * если он не равен NULL, освобождается, выделяется буфер
- * нужного размера. Считанные данные дополняются нулевым
- * байтом. Если указатель на указатель на строку - NULL,
- * строка читается "в никуда". */
+/* Reads a Pascal-string from file. Previous buffer,
+ * if it is not NULL, freed, allocated buffer of 
+ * required size. The read data is padded with a zero
+ * byte. If pointer to pointer to string is NULL,
+ * the line is read "to nowhere". */
 binrw_error_t readsp(FILE * file, char **s);
 
-/* Пишет в файл Pascal-строку. Если длина строки
- * больше 255 или указатель на строку равен NULL, функция
- * завершается с ошибкой. */
+/* Writes a Pascal-string to the file. If string length
+ * greater than 255 or pointer to string is NULL, function
+ * fails. */
 binrw_error_t writesp(FILE * file, char *s);
 
-/* Читает из файла ASCIIZ-строку. Прежний буфер,
- * если он не равен NULL, освобождается, выделяется буфер
- * нужного размера. Считанные данные дополняются нулевым
- * байтом. Если указатель на указатель на строку - NULL,
- * строка читается "в никуда". */
+/* Reads and ASCIIZ-string from the file. Previous buffer,
+ * if it is not NULL, freed, allocated buffer of
+ * required size. The read data is padded with a zero
+ * byte. If pointer to pointer to string is NULL,
+ * the line is read "to nowhere". */
 binrw_error_t readsz(FILE * file, char **s);
 
-/* Пишет в файл ASCIIZ-строку. Если указатель на строку
- * равен NULL, функция завершается с ошибкой. */
+/* Writes an ASCIIZ-string to the file, If pointer to string
+ * is NULL, the function returns with an error. */
 binrw_error_t writesz(FILE * file, char *s);
 
 binrw_error_t readf(FILE * file, char *format, ...);

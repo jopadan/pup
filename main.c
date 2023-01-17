@@ -21,65 +21,65 @@
 
 typedef struct plugin_s
 {
-  char *name;                   /* Название плагина */
-  char *description;            /* Описание плагина */
+  char *name;                   /* Plugin name */
+  char *description;            /* Plugin description */
 
-  bool_t subdirs;               /* Поддерживает ли файл-пачка подкаталоги */
-  bool_t merge;                 /* Имеет ли файл отдельные поля offset и
-                                   size или одно из них вычисляется на основе
-                                   другого?
-                                   TRUE - имеются оба поля,
-                                   FALSE - имеется только одно из полей. */
-  bool_t meta;                  /* Обязательно ли наличие для данного
-                                   плагина использование файла с мета-информацией */
-  bool_t time;                  /* Хранится ли в файле-пачке время последней
-                                   модификации файла */
-  size_t page;                  /* Размер блока, до которого выравнивается
-                                   размер каждого ресурса */
+  bool_t subdirs;               /* Does the bundle file support subdirectories */
+  bool_t merge;                 /* Does the file have separate offset and size
+                                 * fields, or is one computed from the other?
+                                 * TRUE - both fields are present, 
+                                 * FALSE - only one of the fields is present. */
+  bool_t meta;                  /* Is it necessary for this plugin to use a
+                                 *  file with meta-information */
+  bool_t time;                  /* Does the batch file store the last 
+                                 * modification time of the file */
+  size_t page;                  /* The size of the block to which it is aligned  
+                                 * size of each resource */
 
-  /* Функция проверяет, является ли открытый файл файлом-пачкой,
-   * поддерживаемого данным плагином формата. */
+  /* The function checks if the opened file is a batch file, format
+   * supported by this plugin. */
          bool_t(*is_file) (restable_t * rt);
 
-/* Следующие функции используются для распаковки файла-пачки */
+/* The following functions are used to unpack the bundle file */
 
-  /* Читает каталог ресурсов из файла-пачки. В случае ошибки
-   * возвращает FALSE */
+  /* Reads the resource directory from the bundle file. In case
+   * of error returns FALSE */
          bool_t(*read_dir) (restable_t * rt);
 
-  /* Преобразовать имя ресурса в имя файла. В случае ошибки
-   * возвращает FALSE */
+  /* Convert resource name to filename. In case of error returns
+   * FALSE */
          bool_t(*fill_filename) (resentry_t * re);
 
-  /* Извлекает указанный ресурс из файла-пачки в отдельный файл. */
+  /* Extracts the specified resource from the bundle file into 
+   * a separate file. */
          bool_t(*extract_resource) (restable_t * rt, size_t i);
 
-  /* Извлекает метаданные из файла-пачки в отдельный файл. */
+  /* Extracts metadata from a bundle file into a separate file */
          bool_t(*save_meta) (restable_t * rt);
 
-/* Следующие функции используются для создания новго файла-пачки */
+/* The following functions are used to create a new bundle */
 
-  /* Заполняет метаданные файла-пачки из отдельного файла. */
+  /* Populates the bundle file's metadata from a single file. */
          bool_t(*load_meta) (restable_t * rt);
 
-  /* Преобразовать имя файла в имя ресурса. В случае ошибки
-   * возвращает или недопустимости имени ресурса возвращает
-   * FALSE */
+  /* Convert filename to resource name. In case of error returns or
+   * invalid resource name returns FALSE */
          bool_t(*fill_name) (resentry_t * re);
 
-  /* Заполнить имена ресурсов, поместить указатель файла в начало
-   * первого ресурса. */
+  /* Fill in the resource names, put the file pointer at the beginning
+   * the first resource. */
          bool_t(*prepare_dir) (restable_t * rt);
 
-  /* Записывает ресурс в файл-пачку, заполняя попутно поля смещения,
-   * размера, сжатого размера, типа сжатия и прочую информацию,
-   * которую можно узнать только получив доступ к файлу-ресурсу.*/
+  /* Writes the resource to the pack file, filling in the offset fields in
+   * the offset fields along the way, size, compressed size, compression
+   * type and other information which can only be found by accessing the 
+   * resource file. */
          bool_t(*add_resource) (restable_t * rt, size_t i);
 
-  /* Записать каталог ресурсов в файл. Перед вызовом функции указатель
-   * файла должен быть установлен на следующий байт за последним
-   * ресурсом. Перед завершением функция должна установить указатель
-   * на конец файла. */
+  /* Write the resource directory to a file. Before calling the function,
+   * the pointer file must be set to the next byte after the last resource.
+   * Before terminating, the function must set the pointer to the end of the
+   * file */
          bool_t(*write_dir) (restable_t * rt);
 } plugin_t;
 
@@ -521,12 +521,12 @@ bool_t pack(const plugin_t * p, const char *filename, const char *path,
     fprintf(stderr, "You must specify plugin.\n");
     return FALSE;
   }
-  /* Создаём новый файл-пачку */
+  /* Create a new batch file */
   if (rt_create(&rt, filename, path, meta) == FALSE)
     return FALSE;
   if (p->meta == TRUE)
   {
-    /* Загружаем список файлов и мета-информацию из мета-файла */
+    /* Load file list and meta information from meta file */
     if (p->load_meta(&rt) == FALSE)
     {
       rt_free(&rt);
@@ -535,14 +535,14 @@ bool_t pack(const plugin_t * p, const char *filename, const char *path,
   }
   else
   {
-    /* Сканируем каталоги, заполняем таблицу файлов */
+    /* Scan directories, populate file table */
     if (rt_fill_entries(&rt, p->subdirs) == FALSE)
     {
       rt_free(&rt);
       return FALSE;
     }
   }
-  /* Из имён файлов получаем имена ресурсов */
+  /* Get resource names from filenames */
   for(i = 0; i < rt.number; i++)
   {
     if (rt.entries[i].name != NULL)
@@ -555,13 +555,13 @@ bool_t pack(const plugin_t * p, const char *filename, const char *path,
   }
   if (p->merge == TRUE)
     rt_search_equal_files(&rt);
-  /* Расчёт смещения первого ресурса */
+  /* Calculate the offset of the first resource */
   if (p->prepare_dir(&rt) == FALSE)
   {
     rt_free(&rt);
     return FALSE;
   }
-  /* Читаем файлы и сохраняем как ресурсы */
+  /* Reading files and saving as resources */
   for(i = 0; i < rt.number; i++)
   {
     fprintf(stderr, "Packed %zu/%zu\r", i, rt.number);
@@ -596,7 +596,7 @@ bool_t pack(const plugin_t * p, const char *filename, const char *path,
       }
   }
   fprintf(stderr, "Packing finished.  \n");
-  /* Записываем каталог ресурсов */
+  /* Write resource directory */
   if (p->write_dir(&rt) == FALSE)
   {
     rt_free(&rt);
@@ -612,25 +612,25 @@ bool_t unpack(const plugin_t * p, const char *filename, const char *path,
   restable_t rt;
   size_t i;
 
-  /* Открываем файл-пачку */
+  /* Read resources and save as files */
   if (rt_open(&rt, filename, path, meta) == FALSE)
     return FALSE;
-  /* Если плагин не указан, пытаемся определить */
+  /* If plugin is not specified, try to define it */
   if (p == NULL)
     p = detect_plugin(&rt);
-  /* Если определить не удалось - завершаем работу */
+  /* If it was not possible to determine, we quit */
   if (p == NULL)
   {
     rt_free(&rt);
     return FALSE;
   }
-  /* Читаем каталог ресурсов из файла-пачки */
+  /* Read the resource directory from the bundle file */
   if (p->read_dir(&rt) == FALSE)
   {
     rt_free(&rt);
     return FALSE;
   }
-  /* Из имён ресурсов заполняем имена файлов */
+  /* Find duplicate resources and resource overlap errors */
   for(i = 0; i < rt.number; i++)
   {
     if (rt.entries[i].filename != NULL)
@@ -641,14 +641,14 @@ bool_t unpack(const plugin_t * p, const char *filename, const char *path,
       return FALSE;
     }
   }
-  /* Поиск дубликатов ресурсов и ошибок перекрытия ресурсов */
+  /* Print resource information to standard output */
   if (rt_fix(&rt) == FALSE)
   {
     fprintf(stderr, "unpack: rt_fix failed.\n");
     rt_free(&rt);
     return FALSE;
   }
-  /* Создаём каталоги, необходимые для извлечения файлов */
+  /* Сreate directories needed to extract files */
   if (p->subdirs == TRUE)
   {
     if (rt_make_dirs(&rt) == FALSE)
@@ -665,14 +665,14 @@ bool_t unpack(const plugin_t * p, const char *filename, const char *path,
       return FALSE;
     }
   }
-  /* Выгружаем мета-информацию, если выгрузка поддерживается плагином */
+  /* Uploading meta information if uploading is supported by the plugin */
   if (p->meta == TRUE)
     if (p->save_meta(&rt) == FALSE)
     {
       rt_free(&rt);
       return FALSE;
     }
-  /* Читаем ресурсы и сохраняем как файлы */
+  /* Read resources and save as R files */
   for(i = 0; i < rt.number; i++)
   {
     fprintf(stderr, "Unpacked %zu/%zu\r", i, rt.number);
@@ -700,25 +700,25 @@ bool_t print(const plugin_t * p, const char *filename)
   restable_t rt;
   size_t i;
 
-  /* Открываем файл-пачку */
+  /* Opening the bundle file */
   if (rt_open(&rt, filename, NULL, NULL) == FALSE)
     return FALSE;
-  /* Если плагин не указан, пытаемся определить */
+  /* If the plugin is not specified, try to determine */
   if (p == NULL)
     p = detect_plugin(&rt);
-  /* Если определить не удалось - завершаем работу */
+  /* If it was not possible to determine - exit */
   if (p == NULL)
   {
     rt_free(&rt);
     return FALSE;
   }
-  /* Читаем каталог ресурсов из файла-пачки */
+  /* Read the resource directory from the bundle file */
   if (p->read_dir(&rt) == FALSE)
   {
     rt_free(&rt);
     return FALSE;
   }
-  /* Из имён ресурсов заполняем имена файлов */
+  /* Fill in file names from resource names */
   for(i = 0; i < rt.number; i++)
   {
     if (rt.entries[i].filename != NULL)
@@ -729,14 +729,14 @@ bool_t print(const plugin_t * p, const char *filename)
       return FALSE;
     }
   }
-  /* Поиск дубликатов ресурсов и ошибок перекрытия ресурсов */
+  /* Find duplicate resources and resource overlap errors */
   if (rt_fix(&rt) == FALSE)
   {
     fprintf(stderr, "unpack: rt_fix failed.\n");
     rt_free(&rt);
     return FALSE;
   }
-  /* Выводим на стандартный вывод информацию о ресурсах */
+  /* Printing resource information to standard output */
   rt_print_dir(&rt, stdout);
   rt_free(&rt);
   return TRUE;
@@ -747,32 +747,32 @@ bool_t savemeta(const plugin_t * p, const char *filename, const char *meta)
   restable_t rt;
   size_t i;
 
-  /* Открываем файл-пачку */
+  /* Open the bundle file */
   if (rt_open(&rt, filename, NULL, meta) == FALSE)
     return FALSE;
-  /* Если плагин не указан, пытаемся определить */
+  /* If the plugin is not specified, we try to determine */
   if (p == NULL)
     p = detect_plugin(&rt);
-  /* Если определить не удалось - завершаем работу */
+  /* If it was not possible to determine, exit */
   if (p == NULL)
   {
     rt_free(&rt);
     return FALSE;
   }
-  /* Если плагин не поддерживает выгрузку метаинформации, то завершаем работу */
+  /* If the plugin does not support uploading meta information, the exit */
   if (p->meta == FALSE)
   {
     fprintf(stderr, "savemeta: This plugin does not support metadata.\n");
     rt_free(&rt);
     return FALSE;
   }
-  /* Читаем каталог ресурсов из файла-пачки */
+  /* Reading the resource directory from the bundle file */
   if (p->read_dir(&rt) == FALSE)
   {
     rt_free(&rt);
     return FALSE;
   }
-  /* Из имён ресурсов заполняем имена файлов */
+  /* Fill in file names from resource names  */
   for(i = 0; i < rt.number; i++)
   {
     if (rt.entries[i].filename != NULL)
