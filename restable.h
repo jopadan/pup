@@ -9,77 +9,77 @@
 
 typedef struct resentry_s
 {
-  size_t entry;                 /* Номер ресурса в исходном файле-пачки
-                                   (важно на случай, если сортировка поменяет
-                                   порядок записей) */
+  size_t entry;                 /* Resource number in source bundle file
+                                   (important in case the sorting changes
+				   record order) */
 
-  char *filename;               /* Имя файла на диске */
+  char *filename;               /* File name on disk */
 
-  char *name;                   /* Имя ресурса */
-  size_t offset;                /* Смещение ресурса */
-  size_t size;                  /* Размер ресурса */
+  char *name;                   /* Resource name */
+  size_t offset;                /* Resource offset */
+  size_t size;                  /* Resource size */
 
-  size_t compressed;            /* Сжатый размер ресурса */
-  size_t compression;           /* Номер метода сжатия */
+  size_t compressed;            /* Compressed resource size */
+  size_t compression;           /* Compression metod number */
+  time_t time;                  /* Additional resource attributes - time */
+  size_t type;                  /* Additional resource attributes */
+  size_t id;                    /* Additional resource attributes */
 
-  time_t time;                  /* Дополнительные атрибуты ресурса - время */
-  size_t type;                  /* Дополнительные атрибуты ресурса */
-  size_t id;                    /* Дополнительные атрибуты ресурса */
-
-  ssize_t copyof;               /* -1, если этот ресурс не является копиеей другого,
-                                   иначе - номер ресурса-оригинала */
+  ssize_t copyof;               /* -1, if this resource is not a copy of another */
 } resentry_t;
 
 typedef struct restable_s
 {
-  char *filename;               /* Имя файла-пачки */
-  char *basepath;               /* Базовый каталог для извлечения или поиска файлов */
-  char *meta;                   /* Файл с мета-данными */
-  FILE *file;                   /* Файл-пачка */
+  char *filename;               /* Packet file name */
+  char *basepath;               /* Base directory to extract or search for files */
+  char *meta;                   /* Metadata file */
+  FILE *file;                   /* Bundle file */
 
-  size_t number;                /* Количество ресурсов в таблице */
-  size_t maxnumber;             /* Максимальное количество ресурсов в таблице,
-                                 * которое можно разместить в entries, не выполняя вызов realloc */
+  size_t number;                /* Number of resources in the table */
+  size_t maxnumber;             /* The maximum number of resources in the table, 
+                                   face, which can be placed in entries without 
+				   doing a realloc call */
 
-  resentry_t *entries;          /* Таблица ресурсов */
+  resentry_t *entries;          /* Resource table */
 } restable_t;
 
-/* Создать новый файл-пачку */
+/* Create a new batch file */
 bool_t rt_create(restable_t * rt, const char *filename, const char *basepath,
                  const char *meta);
 
-/* Открыть существующий файл-пачку */
+/* Оpen an existing bundle file */
 bool_t rt_open(restable_t * rt, const char *filename, const char *basepath,
                const char *meta);
 
-/* Очистить текущую таблицу, установить количество записей в таблице равное number */
+/* Clear the current table, set the number of records in the table to number */
 bool_t rt_set_number(restable_t * rt, size_t number);
 
-/* Добавить новую пустую запись ко списку ресурсов, добавленный ресурс будет иметь
- * номер rt->number */
+/* Add a new empty entry to the list of resources, the added resource will have
+ * number rt->number */
 bool_t rt_add_entry(restable_t * rt);
 
-/* Освободить всю память, распределённую restable_t */
+/* Free all memory allocated by restable_t */
 void rt_free(restable_t * rt);
 
-/* Просканировать каталог rt->basepath, добавив в таблицу ресурсов
- * все имена найденных файлов. subdirs означает, следует ли сканировать
- * подкаталоги. Если подкаталоги сканировать не следует, но подкаталог
- * обнаружился, то функция завершит работу с сообщением об ошибке. */
+/* Scan the rt->basepath directory, adding to the resource table
+ * all names of found files. subdirs means whether to scan
+ * subdirectories. If subdirectories should not be scanned, but the subdirectory
+ * is found, the function will exit with an error message. */
 bool_t rt_fill_entries(restable_t * rt, bool_t subdirs);
 
-/* Создать все необходимые для извлечения файлов каталоги */
+/* Create all necessary directories for extracting files */
 bool_t rt_make_dirs(restable_t * rt);
 
-/* Скопировать файлы в файл-пачку */
+/* Copy files to a batch file */
 bool_t rt_add_resource(restable_t * rt, size_t i);
 
+/* Copy resources from bundle file to separate files */
 bool_t rt_align_resource(restable_t * rt, size_t i, size_t page);
 
-/* Скопировать ресурсы из файла-пачки в отдельные файлы */
+/* Copy resources from bundle file to separate files */
 bool_t rt_extract_resource(restable_t * rt, size_t i);
 
-/* Вывести на стандартный вывод все атрибуты всех ресурсов */
+/* Print to standard output all attributes of all resources */
 void rt_print_dir(restable_t * rt, FILE * file);
 
 bool_t rt_not_save_meta(restable_t * rt);

@@ -25,21 +25,23 @@ list(FILTER PUP_SOURCES EXCLUDE REGEX test.c)
 
 # external dependencies
 find_package(ZLIB REQUIRED)
+find_package(TermPOD REQUIRED)
 
 # pup executable
 add_executable(${PROJECT_NAME} ${PUP_SOURCES}) 
-target_compile_options(${PROJECT_NAME} PUBLIC ${ZLIB_CFLAGS})
-target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIR} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_compile_options(${PROJECT_NAME} PUBLIC ${ZLIB_CFLAGS} ${TERMPOD_CFLAGS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIR}
+	${TERMPOD_INCLUDE_DIR} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES} -ltermpod)
 
 # test executable
 add_executable(test bin.c test.c bin.h)
 set_target_properties(test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_test(test test)
 
-install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Export
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 	)

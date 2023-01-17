@@ -18,6 +18,7 @@
 #include "dat2.h"
 #include "rff.h"
 #include "labn.h"
+#include "pod.h"
 
 typedef struct plugin_s
 {
@@ -461,7 +462,49 @@ plugin_t plugins[] = {
    &labn_fill_name,
    &labn_prepare_dir,
    &labn_add_resource,
-   &labn_write_dir}
+   &labn_write_dir},
+  {
+   "pod",
+   "POD[1-6]-files of Terminal Reality games",
+   POD_SUBDIRS,
+   POD_MERGE,
+   POD_META,
+   POD_TIME,
+   POD_PAGE,
+   &is_pod,
+
+   &pod_read_dir,
+   &pod_fill_filename,
+   &pod_extract_resource,
+
+   &pod_save_meta,
+   &pod_load_meta,
+
+   &pod_fill_name,
+   &pod_prepare_dir,
+   &pod_add_resource,
+   &pod_write_dir},
+  {
+   "epd",
+   "EPD-files of Terminal Reality games",
+   POD_SUBDIRS,
+   POD_MERGE,
+   POD_META,
+   POD_TIME,
+   POD_PAGE,
+   &is_pod,
+
+   &pod_read_dir,
+   &pod_fill_filename,
+   &pod_extract_resource,
+
+   &pod_save_meta,
+   &pod_load_meta,
+
+   &pod_fill_name,
+   &pod_prepare_dir,
+   &pod_add_resource,
+   &pod_write_dir}
 };
 
 #define NUM_PLUGINS (sizeof(plugins) / sizeof(plugin_t))

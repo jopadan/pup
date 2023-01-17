@@ -10,7 +10,7 @@
 #include "bin.h"
 #include "restable.h"
 
-/* Очистить все поля структуры restabe_t */
+/* Clear all fields of the restabe_t structure */
 void rt_clear(restable_t * rt)
 {
   rt->filename = NULL;
@@ -63,14 +63,14 @@ bool_t rt_init(restable_t * rt, const char *filename, const char *basepath,
   return TRUE;
 }
 
-/* Создать новый файл-пачку */
+/* Create a new batch file */
 bool_t rt_create(restable_t * rt, const char *filename, const char *basepath,
                  const char *meta)
 {
   return rt_init(rt, filename, basepath, meta, "wb");
 }
 
-/* Открыть существующий файл-пачку */
+/* Open an existing bundle file */
 bool_t rt_open(restable_t * rt, const char *filename, const char *basepath,
                const char *meta)
 {
@@ -144,7 +144,7 @@ bool_t rt_add_entry(restable_t * rt)
   return rt_set_number(rt, rt->number + 1);
 }
 
-/* Освободить всю память, распределённую restable_t */
+/* Free all memory allocated by restable_t */
 void rt_free(restable_t * rt)
 {
   size_t i;
@@ -411,7 +411,7 @@ bool_t rt_make_dirs(restable_t * rt)
 
 bool_t rt_not_save_meta(restable_t * rt)
 {
-  /* Подавляем предупреждение о неиспользуемом параметре */
+  /* Suppress warning about unused parameter */
   (void)rt;
 
   return FALSE;
@@ -419,7 +419,7 @@ bool_t rt_not_save_meta(restable_t * rt)
 
 bool_t rt_not_load_meta(restable_t * rt)
 {
-  /* Подавляем предупреждение о неиспользуемом параметре */
+  /* Suppress warning about unused parameter */
   (void)rt;
 
   return FALSE;
@@ -476,7 +476,7 @@ bool_t rt_rename(restable_t * rt, unsigned long i)
   char *newname;
   bool_t result;
 
-  /* Проверяем правильность переданных аргументов */
+  /* Check if the passed arguments are valid */
   if (rt == NULL)
   {
     fprintf(stderr, "rt_rename: rt == NULL\n");
@@ -488,13 +488,13 @@ bool_t rt_rename(restable_t * rt, unsigned long i)
     return FALSE;
   }
 
-  /* Инициализируем локальные переменные функции */
+  /* Initialize the function's local variables */
   name = NULL;
   ext = NULL;
   newname = NULL;
   result = FALSE;
 
-  /* Получаем путь-имя и расширение файла */
+  /* Get the path-name and extension of the file */
   s_pathname(&name, rt->entries[i].filename, SYS_PATH_DELIM);
   if (name == NULL)
   {
@@ -510,23 +510,23 @@ bool_t rt_rename(restable_t * rt, unsigned long i)
 
   for(number = 1; number < ULONG_MAX; number++)
   {
-    /* Вставляем число перед расширением */
+    /* Insert number before expansion */
     s_sprintf(&newname, "%s-%d%s", name, number, ext);
     if (newname == NULL)
     {
       fprintf(stderr, "rt_rename: s_sprintf failed.\n");
       goto rt_rename_exit;
     }
-    /* Если изменённое имя - уникальное, то переименование выполнено */
+    /* If the changed name is unique, then the renaming is done */
     if (rt_search_by_filename(rt, newname, TRUE) < 0)
     {
       s_strcpy(&(rt->entries[i].filename), newname);
       break;
     }
-    /* Изменённое имя - не уникальное, поэтому увеличиваем число и пробуем снова */
+    /* The changed name is not unique, so increase the number and try again */
   }
-  /* Если были переьраны все числа, а уникальное имя так и не было найдено,
-     то завершаем работу с сообщенем об ошибке */
+  /* If all numbers have been iterated over and no unique name has been found,
+     then exit with an error message */
   if (number == ULONG_MAX)
   {
     fprintf(stderr, "rt_rename: out of numbers.\n");
@@ -569,17 +569,17 @@ bool_t rt_fix(restable_t * rt)
       if ((rt->entries[i].compression == rt->entries[j].compression)
           && (rt->entries[i].compressed == rt->entries[j].compressed))
       {
-        /* Проверка, не ссылаются ли ресурсы на один и тот же блок. */
+        /* Check if the resources refer to the same block. */
         if (rt->entries[i].offset == rt->entries[j].offset)
         {
-          /* Не считаем дубли дважды. */
+          /* Do not count duplicates twice. */
           if (rt->entries[j].copyof == -1)
           {
             rt->entries[j].copyof = i;
             hardlinks++;
           }
         }
-        /* Проверка, не одинаково ли содержимое обоих блоков. */
+        /* Check if the contents of both blocks are not the same. */
         else if (is_equal_blocks(rt->file,
                                  rt->entries[i].offset, rt->entries[j].offset,
                                  rt->entries[i].compressed) == TRUE)
@@ -588,7 +588,7 @@ bool_t rt_fix(restable_t * rt)
           copies++;
         }
       }
-      /* Проверка, не пересекаются ли блоки. */
+      /* Check if blocks overlap. */
       if (((rt->entries[i].offset > rt->entries[j].offset)
            && (rt->entries[i].offset <
                rt->entries[j].offset + rt->entries[j].compressed)) ||
@@ -600,14 +600,14 @@ bool_t rt_fix(restable_t * rt)
         fprintf(stderr, "rt_fix: entries %zu and %zu overlapped!\n", i, j);
         return FALSE;
       }
-      /* Проверка, уникальное ли это имя файла. */
+      /* Check if the filename is unique. */
       if (strcmp(rt->entries[i].filename, rt->entries[j].filename) == 0)
       {
-        /* Если найдены файлы с одинаковыми именами и одинаковым содержимым,
-           то переименовывать не нужно. */
+        /* If files with the same name and content are found,
+           then you don't need to rename it. */
         if (rt->entries[j].copyof == -1)
         {
-          /* Пытаемся переименовать файл. */
+	  /* Try to rename the file. */
           if (rt_rename(rt, j) != TRUE)
           {
             fprintf(stderr, "rt_fix: rt_rename failed.\n");
@@ -628,7 +628,7 @@ bool_t rt_fix(restable_t * rt)
   return TRUE;
 }
 
-/* Поиск одинаковых файлов */
+/* Search for duplicate files */
 bool_t rt_search_equal_files(restable_t * rt)
 {
   size_t i;
