@@ -1,1045 +1,1043 @@
 13-09-2010
 
-	Реализовал упаковщик/распаковщик для Duke Nukem 3D (grp.c).
+ Implemented a packer/unpacker for Duke Nukem 3D (grp. c).
 
-	Он также должен быть пригоден для следующих игр:
-		* Blood
-		* Shadow Warrior
-		* Redneck Rampage
+ It should also be suitable for the following games:
+ * Blood
+ * Shadow Warrior
+ * Redneck Rampage
 
 14-09-2010
 
-	Реализовал упаковщики/распаковщики для
-	Dune 2: The Building of Dynasty (pak.c) и
-	Star Wars: Dark Forces (gob.c).
+ Implemented packers/decompressers for
+ Dune 2: The Building of Dynasty (pak.c) и
+ Star Wars: Dark Forces (gob.c).
 
-	Последний должен быть пригоден также для игры Outlaws.
-	
+ The latter should also be suitable for playing Outlaws.
+ 
 14-09-2010
 
-	Реализовать проверку допустимости имён ресурсов. Для grp.c,
-	pak.c и gob.c - это обычные досовские имена: до 8 символов
-	в имени, точка, до трёх символов расширения, все в верхнем
-	регистре. Допустимы латинские буквы, цифры, знаки минус,
-	подчёркивание.
+ Implement validation of resource names. For grp. c, pak. c, and gob. c , these are the usual DOS names:
+ up to 8 characters in the name, a period, and up to three extension characters, all uppercase.
+ Latin letters, numbers, minus signs, and underscores are allowed.
 
-	Реализовать проверку на перекрытие ресурсов.
+ Implement a check for overlapping resources.
 
-	Реализовать возврат статуса успеха/неудачи там, где успех
-	не гарантирован.
+ Implement a return of the success/failure status where success is not guaranteed.
 
 15-09-2010
-	Реализован распаковщик/упаковщик для Quake (pack.c).
+ Implemented an unpacker / packer for Quake (pack. c).
 
-	Он должен также работать с ресурсами других игр:
-		* Quake 2,
-		* Heretic 2,
-		* Half-Life,
-		 Counter strike,
-		 Opposing force,
-		* Soldier of fortune,
-		* MDK 2.
+ It should also work with resources from other games:
+ * Quake 2,
+ * Heretic 2,
+ * Half-Life, Counter strike, Opposing force,
+ * Soldier of fortune,
+ * MDK 2.
 
-Разработана новая концепция программ распаковки/упаковки.
+A new concept of unpacking/packaging programs has been developed.
 
-План упаковки:
-1. Получаем список имён файлов, которые нужно запаковать,
-2. Из имён файлов получаем имена ресурсов,
+Packaging plan:
+1. Get a list of file names to pack,
+2. From the file names, we get resource names,
 
-3. Считаем размер заголовка вместе с каталогом (если каталог следует непосредственно за заголовком),
-4. Записываем все ресурсы. На этом этапе обязательно нужно заполнить недостающие нужные элементы каталога:
- смещение ресурса, если оно нужно,
- размер ресурса, если он нужен,
- размер ресурса в сжатом виде, если нужен и если используется сжатие,
- тип ресурса и/или тип сжатия.
-5. Записываем правильный заголовк файла и каталог, устанавливаем смещение на конец файла.
+3. Calculate the size of the header along with the directory (if the directory follows the header directly),
+4. Record all resources. At this stage, you must fill in the missing necessary elements of the catalog:
+- the offset of the resource, if necessary,
+- the size of the resource, if necessary,
+- the size of the resource in compressed form, if necessary, and if compression is used, resource type and / or compression type.
+5. Write the correct file header and directory, set the offset to the end of the file.
 
-План распаковки:
-1. Считываем каталог,
-2. Заполняем недостающие поля каталога (можно делать на этапе 1),
-3. Распаковка ресурсов или печать содержимого каталога или проверка целостности и непротиворечивости каталога.
+Unpacking plan:
+1. Reading the catalog,
+2. Fill in the missing fields of the catalog (you can do this at step 1),
+3. Unpack resources or print the contents of the catalog or check the integrity and consistency of the catalog.
 
+```c
 typedef enum type_e
 {
 };
-
+```
 typedef struct resentry_s
 {
-	char *name;	// Имя ресурса
-	char *filename;	// Имя файла на диске
-	size_t size;	// Размер ресурса на диске
-	size_t compressed; // Размер ресурса внутри файла-пачки
-	size_t offset;	// Смещение ресурса
-	restype_t type;	// Тип ресурса или алгоритм сжатия
+char *name; // Resource name
+char *filename; / / File name on disk
+ size_t size; // Size of the resource on disk
+ size_t compressed; // Size of the resource inside the bundle file
+ size_t offset; / / Resource
+offset restype_t type; / / Resource type or compression algorithm
 } resentry_t;
 
 typedef struct resdir_s
 {
-	size_t number;	// Количество ресурсов в каталоге
-	resentry_t *dir; // Каталог ресурсов
+size_t number; / / Number of resources in
+the resentry_t *dir directory; / / Resource directory
 } resdir_t;
 
-/* Сканирует файловую систему, заполняя каталог ресурсов именами файлов.
-Сканирование может быть рекурсивным, нерекурсивным, с сортировкой файлов
-по алфавиту или без неё, с добавлением маркеров начала и конца очередного
-каталога или без маркеров.*/
+/ * Scans the file system, filling the resource directory with file names.
+Scanning can be recursive or non-recursive, with or without alphabetical sorting of files
+, with or without adding markers for the beginning and end of the next
+directory.*/
 bool_t xxx_get_list(resdir_t *dir, const char *path);
 
-/* Заполняет каталог именами ресурсов, правильных для данного формата xxx.*/
-bool_t xxx_fill_names(resdir_t *dir);
+/ * Fills the directory with resource names that are correct for the given xxx format.* /
+bool_t xxx_fill_names (resdir_t *dir);
 
-/* Считает размер начальной части файла (заголовок и каталог, если каталог не
-в конце файла) для формата xxx.*/
+/ * Calculates the size of the initial part of the file (header and directory, if the directory is not
+at the end of the file) for the xxx format.* /
 bool_t xxx_get_header_size(resdir_t *dir, unsigned long *header_size);
 
-/* Пакует файлы начиная с указанного смещения offset. В процессе паковки
-файлов заполняются остальные поля - смещение файла, его исходный размер,
-сжатый размер и тип. Возвращает смещение offset, соответсующее байту,
-следующему за последним упакованным ресурсом. */
+/ * Packs files starting from the specified offset. When packing
+files, the remaining fields are filled in: file offset, source size,
+compressed size, and type. Returns the offset offset corresponding to the byte
+following the last packed resource. * /
 bool_t xxx_pack_files(FILE *file, resdir_t *dir, const char *basepath, unsigned long *offset);
 
-/* Записывает заголовок и каталог ресурсов. Если каталог ресурсов должен
-находиться после ресурсов, то он записывается по смещению offset.*/
+/ * Writes the resource header and directory. If the resource directory must
+be located after the resources, then it is written at offset.*/
 bool_t xxx_write_dir(FILE *file, resdir_t *dir, unsigned long offset);
 
-/* Считывание каталога ресурсов и заполнение недостающих полей. */
+/ * Reading the resource directory and filling in the missing fields. * /
 bool_t xxx_read_dir(FILE *file, resdir_t *dir);
 
-/* Извлечение ресурсов в отдельные файлы. */
+/ * Extracting resources to separate files. */
 bool_t xxx_unpack_files(FILE *file, resdir_t *dir, const char *basepath);
 
-/* Печать содержимого каталога ресурсов. */
+/ * Print the contents of the resource directory. * /
 void xxx_print(resdir_t *dir);
+```
 
-	Написан новый вариант grp.c, использующий новую типовую схему
-	паковки/распаковки.
+ A new version of grp.c has been written, using a new standard scheme
+ packing/unpacking.
 
 16-09-2010
 
-	Написана функция is_dos_filename, проверяющая, является ли
-	строка именем файла DOS (проверка схемы 8.3 и допустимых символов).
+ The is_dos_filename function is written to check whether
+a string is a DOS file name (checking scheme 8.3 and valid characters).
 
-	Спроектировал новую типовую схему паковки/распаковки:
+ Designed a new standard packing/unpacking scheme:
 
-Упаковка:
+Packaging:
 
-/* Сканирует каталог src_path в поисках файлов для упаковки,
-заполняет имена ресурсов, считает размер заголовка с каталогом
-(если каталог должен располагаться в начале файла), устанавливает
-текущий указатель файла file на ту позицию, откуда можно начать
-записывать ресурсы. */
+/ * Scans the src_path directory for files to pack,
+fills in resource names, calculates the size of the header with the directory
+(if the directory should be located at the beginning of the file), sets
+the current file pointer file to the position where you can start
+writing resources. */
 bool_t xxx_prepare_dir(FILE *file, resdir_t *dir, const char *src_path);
 
-/* Указатель в файле должен указывать на первый байт, относящийся
- к какому-либо ресурсу.
-Пакует файлы, перечисленные в каталоге dir и находящиеся в каталоге
-файловой системы src_path. Попутно заполняет смещение каждого ресурса,
-его размер, сжатый размер, тип ресурса или способ сжатия.*/
+/ * The pointer in the file must point to the first byte of
+a resource.
+Packages files listed in the dir directory and located in
+the src_path file system directory. Along the way, it fills in the offset of each resource,
+its size, compressed size, resource type, or compression method.*/
 bool_t xxx_pack_files(FILE *file, resdir_t *dir, const char *src_path);
 
-/* Указатель в файле должен указывать на следующий байт после всех ресурсов.
- Переходит в начало файла ресурсов, записывает заголовок,
- заполненный готовый каталог ресурсов за заголовком или записанными данными.*/
+/ * The pointer in the file must point to the next byte after all resources.
+ Goes to the beginning of the resource file, writes the header
+filled in the ready resource directory after the header or recorded data.*/
 bool_t xxx_write_dir(FILE *file, resdir_t *dir);
 
-Распаковка:
+Unpacking it:
 
-/* Читает каталог из файла ресурсов, заполняет имена файлов, которые
-будут использоваться при извлечении ресурсов в файлы. */
+/ * Reads a directory from a resource file, fills in the names of files that
+will be used when extracting resources to files. */
 bool_t xxx_read_dir(FILE *file, resdir_t *dir);
 
-/* Печать каталога ресурсов, заполненного функцией xxx_read_fir. */
+/ * Print a resource directory filled with the xxx_read_fir function. * /
 void xxx_print_dir(resdir_t *dir);
 
-/* Извлечение всех ресурсов из файла с ресурсами. */
+/ * Retrieves all resources from the resource file. */
 bool_t xxx_unpack_files(FILE *file, resdir_t *dir, const char *dst_path);
 
-	Переписана программа grp.c под новую типовую схему упаковки/распаковки.
-	Программа получилась очень компактной, вся логика работы программы
-	просматривается легко. Это, пожалуй, самая оптимальная схема
-	упаковки/распаковки. В дальнейшем буду использовать именно её.
+ The grp.c program has been rewritten for a new standard packaging/unpacking scheme.
+ The program turned out to be very compact, all the logic of the program works
+ viewed easily. This is probably the most optimal scheme
+ packaging/unpacking. In the future, I will use it.
 
-	Дальнейший план - скомпоновать упаковщики/распаковщики
-		pak.c
-		gob.c
-		pack.c
-	под новую схему упаковки/распаковки.
+ The next plan is to build packers / unpackagers
+pak. c
+gob. c
+pack.c
+ under the new packaging/unpacking scheme.
 
-	Потом можно приступить к реализации упаковщиков/распаковщиков
-		vpp.c (Red Faction,
-			нужно будет написать vpp_unpack_files),
-		viv.c (NFS)
-		dpk4.c (Starmageddon, без распаковки сжатых ресурсов)
-		pack2.c (Daikatana,
-			 для начала без распаковки сжатых ресурсов)
-		wad2.c (Quake, Half-Life, без конвертации изобажений)
-		wad.c (Doom, Heretic, Hexen, Strife,
-			без конвертации изображений)
+ Then you can start implementing
+the vpp.c packers/decompressers (Red Faction,
+ you will need to write vpp_unpack_files),
+viv. c (NFS)
+dpk4. c (Starmageddon, without decompressing compressed resources)
+pack2. c (Daikatana,
+for starters without decompressing compressed resources)
+wad2. c (Quake, Half-Life, without converting images)
+wad. c (Doom, Heretic, Hexen, Strife,
+ without converting images)
 
 17-09-2010
 
-	Реализовал распаковщик/паковщик pak.c по новой схеме
-	упаковки/распаковки.
+ Implemented the unpacker / packer pak. c according to the new scheme
+ packaging/unpacking.
 
-	Реализовал распаковщик/паковщик gob.c по новой схеме
-	упаковки/распаковки. Имена файлов в gob - это не DOS-имена,
-	у некоторых файлов длина собственно имени достигает
-	9 символов. Сделал проверку лишь полной длины имени файла
-	с расширением - она не должна быть больше 12 символов.
+ Implemented the gob.c unpacker/packer according to the new scheme
+ packaging/unpacking. File names in gob are not DOS names,
+ for some files, the actual name is as long as
+ 9 characters. I checked only the full length of the file name
+ with the extension - it should not be more than 12 characters.
 
-	Реализовал распаковщик/паковщик pack.c по новой схеме
-	упаковки/распаковки. Добавил проверку по длине имени
-	файла - общая длина вместе с каталогами и расширением
-	не должна превышать 56 символов.
+ Implemented the pack.c unpacker/packer according to the new scheme
+ packaging/unpacking. Added a check for the length
+ of the file name - the total length along with the directories and extension
+ must not exceed 56 characters.
 
 18-09-2010
 
-	Реализовал распаковщик/паковщик vpp.c.
+ Implemented the vpp.c unpacker/packer.
 
-	Функцию dir_pack_files можно переписать с использованием
-	выравнивания файлов по размеру страницы. Эту обобщённую
-	функцию можно использовать во всех паковщиках.
+ The dir_pack_files function can be rewritten using
+ align files to the page size. This generalized
+ this function can be used in all packers.
 
-	Также можно объединить функции dir_get_list и dir_get_rlist.
-	Использовать обобщённую функцию с указанием булевого параметра,
-	указывающего работать ли в рекурсивном варианте или в
-	нерекурсивном.
+ You can also combine the dir_get_list and dir_get_rlist functions.
+ Use a generalized function with a boolean parameter specified,
+ indicates whether to work in the recursive version or in
+ the non-recursive one.
 
-	Можно объединить функции mkpath и dir_make_dirs, добавив
-	параметр булевого типа, который будет указывать, работать
-	ли в рекурсивном режиме или нет.
+ You can combine the mkpath and dir_make_dirs functions by adding
+ a boolean parameter that specifies
+ whether to work in recursive mode or not.
 
-	Реализовать проверку перекрытия ресурсов.
+ Implement a resource overlap check.
 
 19/20-09-2010
 
-	Переписал функцию dir_pack_files, добавив функцияю выравнивания
-	размера ресурса в файле до кратного указанному.
+ I rewrote the dir_pack_files function, adding functions to align
+ the size of the resource in the file to a multiple of the specified one.
 
-	Переписал функцию dir_get_list, добавив булевый параметр - 
-	поддержка рекурсии. В случае если рекурсия не поддерживается, но
-	обнаружен подкаталог, функция завершается с ошибкой.
+ Rewrote the dir_get_list function by adding a boolean parameter - 
+ recursion support. If recursion is not supported, but
+ a subdirectory is detected, the function fails with an error.
 
-	От объединения mkpath и dir_make_dirs отказался, т.к. получившаяся
-	функция стала бы зависеть от структуры resdir_t, даже если она не
-	нужна при нерекурсивном вызове. В таком случае функцию mkpath
-	всё равно пришлось бы оставить для проектов, не использующих
-	resdir_t, а это бы только усложнило и увеличило бы проект в размерах.
+ I refused to combine mkpath and dir_make_dirs, because the resulting
+ function would depend on the resdir_t structure, even if it is not
+ needed for a non-recursive call. In this case, the mkpath function would
+ still have to be left for projects that do not use
+ resdir_t, and this would only complicate and increase the project size.
 
 21-09-2010
 
-	Оформил исходники копрессора и декомпрессора из старой программы
-	pack2/v2 в виде модуля pack2_lz.c и pack2_lz.h
+ Designed the source code for the copressor and decompressor from the old program
+ pack2 / v2 as a module pack2_lz. c and pack2_lz. h
 
-	Под вечер написал pack2.c. Программа вроде-бы нормально распаковывала
-	ресурсы с диска, но запакованные самой собой ресурсы распаковывала
-	неправильно - совпадала какая-то начальная часть распакованного
-	файла, а дальше шёл мусор. Выяснить в чём дело не удалось.
+ In the evening, I wrote pack2. c. The program seems to be normally unpacking
+ resources from disk, but it unpacked the resources packed by itself
+ incorrectly - some initial part of the unpacked
+ file coincided,and then there was garbage. I couldn't find out what the problem was.
 
 22-09-2010
 
-	Во второй половине дня обнаружил ошибку в функции декомпрессии. Она
-	неожиданно завершала работу, не завершив распаковку. Виной этому
-	было неправильное условие завершения работы. После исправления
-	несколько раз распакованные и запакованные файлы остаются идентичными,
-	что говорит об отсутствии явных ошибок в алгоритме упаковки/распаковки.
+ In the afternoon, I found an error in the decompression function. It
+ unexpectedly shut down without completing unpacking. The reason for this
+ was an incorrect shutdown condition. After fixing
+ it several times, the unpacked and packed files remain identical,
+ this indicates that there are no obvious errors in the packing/unpacking algorithm.
 
-	На этот раз меня заинтересовало другое обстоятельство. Моя программа,
-	в подавляющем большинстве случаев сжимая ресурсы лучше, чем программа
-	разработчиков игры, создавала файл большего размера. Эту проблему я
-	за сегодняшний день так и не решил. Все проверки показывают, что
-	моя программа сжала эффективнее в сумме на 23 мегабайта, лишь в
-	отдельных 90 случаях показав суммарное отставание в 251 байт. Но тем
-	не менее результирующий файл, созданный моей программой, оказался
-	примерно на 40 килобайт больше оригинального файла.
-	
+ This time I was interested in something else. My program,
+ in the vast majority of cases, compressing resources is better than the program.
+ developers of the game, created a larger file. This problem I have
+ I haven't decided yet. All checks show that
+ my program compressed a total of 23 megabytes more efficiently, only in
+ some 90 cases showing a total lag of 251 bytes. But
+ nevertheless, the resulting file created by my program turned out to be
+ approximately 40 kilobytes more than the original file.
+ 
 23-09-2010
 
-	Посчитал размер исходного файла через сумму размеров сжатых ресурсов.
-	Она оказалась больше размера исходного файла! Заподозрив неладное,
-	реализовал-таки наконец проверку перекрытия ресурсов. В исходном файле
-	есть перекрытия ресурсов - одинаковые по содержимому ресурсы с разными
-	именами не добавляются повторно, они ссылаются на уже имеющиеся в
-	файле данные, так что два ресурса ссылаются на один и тот же блок.
+ Calculated the size of the source file using the sum of the compressed resource sizes.
+ It was larger than the original file size! Suspecting something was wrong,
+ I finally implemented a resource overlap check. 
+ There are resource overlaps in the source file . Resources with different
+ names that are identical in content are not added again. They refer to data that is already present in
+ the file, so two resources refer to the same block.
 
-	Теперь хочу реализовать кроме проверки перекрытия ресурсов ещё и поиск
-	ресурсов-дубликатов, которые ссылаются на один и тот же блок в файле.
+ Now I want to implement, in addition to checking the overlap of resources, also search
+ for duplicate resources that refer to the same block in the file.
 
-	Ещё хочу реализовать поиск дубликатов при добавлении очередного файла
-	и всё-таки утереть нос паковщику, который создал оригинальный файл, 
-	из чисто спортиновго интереса. Ну и вообще будет полезно уметь создавать
-	компактные файлы, там где это возможно (форматы grp, pak и vpp сделать
-	это не позволяют).
+ I also want to implement a search for duplicates when adding another file
+ and still wipe the nose of the packer who created the original file,
+ out of pure sportinovgo interest. In general, it will be useful to be able to create
+ compact files where possible (grp, pak, and vpp formats).
+ this is not allowed).
 
-	Что там ещё остаётся в планах?
-		wad2/wad3 (Quake, Half Life)
-		dpk4 (Starmageddon)
-		viv (NFS)
-		wad (Doom)
+ What else is planned?
+ wad2/wad3 (Quake, Half Life)
+ dpk4 (Starmageddon)
+ viv (NFS)
+ wad (Doom)
 
 
 26-09-2010
 
-	Добавил массу проверок и диагностических сообщений в модуль binrw.c
+ Added a lot of checks and diagnostic messages to the binrw.c module
 
-	Реализовал модуль wad23.c для работы с WAD2 и WAD3-файлами.
+ Implemented the wad23.c module for working with WAD2 and WAD3 files.
 
 28-09-2010
 
-	Добавил модуль viv.c для работы с VIV-файлами NFS. Пока не проверял.
+ Added the viv.c module for working with NFS VIV files. I haven't checked it yet.
 
-	Переделал модули grp.c, gob.c, pak.c, pack.c, pack2.c, wad23.c в плагины,
-	написал единую программу, работающую с плагинами. В каждом из плагинов
-	реализована функция "узнавания" своего формата. Функции узнавания,
-	перебираемые в цикле, позволяют реализовать функцию автоопределения
-	формата файла.
+ I converted the grp.c, gob.c, pak.c, pack.c, pack2.c, and wad23.c modules into plugins,
+ and wrote a single program that works with plugins. Each of the plugins
+ has a function of "recognizing" its own format. The recognition functions
+ that loop through allow you to implement the automatic detection
+ of the file format.
 
-	Добавил к программе модули vpp.c, viv.c. Написал новую функцию main с
-	новой логикой обработки опций и новыми опциями.
+ Added vpp.c, viv.c modules to the program. Wrote a new main function with
+ a new logic for processing options and new options.
 
 29-09-2010
 
-	Сделал наметки для программы piconv: написал функцию задания формата
-	хранения цвета по маске каждого из компонентов, функцию преобразования
-	цвета из одного формата в другой. Ещё требуется отладка на случай
-	если компонент не используется.
+ I made some sketches for the piconv program: I wrote a function for setting the format
+ storing colors by the mask of each of the components, the function of converting
+ colors from one format to another. Debugging is also required in
+ case the component is not used.
 
-	Написал функции s_pathname и s_nameext в модуле binrw.c. Задействовал
-	новую функцию в main.c программы puptool.
+ Wrote the s_pathname and s_nameext functions in the binrw.c module. Used
+ the new function in main.c of the puptool program.
 
-	В планах, как и прежде:
-		IWAD, PWAD - Doom & Co
-		DPK4 - Starmageddon
-	К планам прибавились:
-		RES - Comanche 3
-		RFF - Blood
-		DAT - Fallout
-		DAT - Fallout 2
+ In the plans, as before:
+ IWAD, PWAD - Doom & Co
+ DPK4-Starmageddon
+ Added to the plans:
+ RES-Comanche 3
+ RFF - Blood
+ DAT - Fallout
+ DAT - Fallout 2
 
 30-09-2010
 
-	Добавил модуль rff.c. Распаковка и упаковка происходят отлично, однако
-	игра использует поле entry.unknown2 в качестве идентификаторов ресурсов.
-	Многие ресурсы игра ищет не по имени, а по идентификатору. Из-за этого
-	простая упаковка файлов не даёт нужного эффекта. Чтобы игра заработала,
-	нужно восстанавливать ещё и значение этого поля. Для этого нужно
-	при экспорте ресурсов создавать также один специальный файл с именами
-	ресурсов и их номерами, а при импорте искать этот файл и считывать из
-	него идентификаторы ресурсов.
+ Added the rff.c module. Unpacking and packaging work fine, but
+ the game uses the entry.unknown2 field as resource IDs.
+ The game searches for many resources not by name, but by ID. Because of this
+ , simply wrapping files doesn't have the desired effect. To make the game work,
+ you also need to restore the value of this field. To do this
+ , when exporting resources, you also need to create one special file with the names
+ of resources and their numbers, and when importing, search for this file and read
+ resource IDs from it.
 
 01-10-2010
 
-	Разработал новую концепцию библиотеки resdir.c, теперь она называется
-	restable.c. В каждом плагине необходимо добавить две простые функции:
-	get_resname и get_filename, которые будут преобразовывать имя файла в
-	имя ресурса и возвращать его. Если получающееся имя ресурся не является
-	правильным для данного формата, то вместо имени ресурса возвращается
-	NULL. То же самое и для get_filename.
+ Developed a new concept for the resdir.c library, now called
+ restable.c. In each plugin, you need to add two simple functions:
+ get_resname and get_filename, which will convert
+ the file name to the resource name and return it. If the resulting resource name is not
+ correct for this format, then the resource name is returned instead
+ NULL. The same goes for get_filename.
 
-	void get_resname(char **resname, const char *filename);
-	void get_filename(char **filename, const char *resname);
+ void get_resname(char **resname, const char *filename);
+ void get_filename(char **filename, const char *resname);
 
-	При необходимости эти функции могут анализировать или заполнять
-	дополнительные поля, например как в модуле wad23.c.
+ If necessary, these functions can analyze or fill
+ in additional fields, such as in the wad23.c module.
 
-	Следует также воспользоваться функцией ferror для анализа всех ошибок
-	чтения-записи одной логически целостной структуры: заголовка, записи
-	в каталоге ресурсов или всего каталога.
+ You should also use the ferror function to analyze all
+ read-write errors in a single logically complete structure: header, record
+ in the resource directory or the entire directory.
 
-	Для чтения чисел из файла нужно переписать функции freadXe и fwriteXe
-	так, чтобы они не анализировали ошибки чтения/записи. Все ошибки
-	чтения/записи должны анализировать вышестоящие функции с помощью
-	функции ferror.
+ To read numbers from a file, you need to rewrite the freadXe and fwriteXe functions
+ so that they do not analyze read/write errors. All
+ read/write errors should be analyzed by the parent functions using
+ the ferror function.
 
-	При чтении/записи структур следует пользоваться группировкой
-	полей в структуры, но поля читать по одному, с помощью спец. функций
-	чтения/записи полей различных типов.
-
-	Все эти изменения позволят сделать программу более компактной и
-	более концептуально целостной.
+ When reading / writing structures, you should use grouping
+ fields into structures, but read the fields one at a time, using special functions
+ for reading/writing fields of various types. 
+ 
+ All these changes will make the program more compact and
+ more conceptually integrated.
 
 02-10-2010
 
-	Портировал на библиотеку restable и новую плагинную систему плагины
-	grp и gob.
+ Ported to the restable library and the new plugin system plugins
+ grp and gob.
 
-	Следующее изменение в плагинной системе, которое можно сделать -
-	это вынести в плагин функции fill_resname и fill_filename. fill_resname
-	будет вызываться для каждого их файлов в таблице сразу после вызова
-	функции fill_entries. Эта функция будет не только конвертировать
-	имя файла в имя ресурса, но и проверять правильность имени ресурса для
-	данного файла-пачки. fill_filenames будет вызываться для каждого
-	ресурса в таблице сразу после функции read_dir.
+ The next change you can make in the plugin system is
+ to add the fill_resname and fill_filename functions to the plugin. fill_resname
+ will be called for each of the files in the table immediately after calling
+ the fill_entries function. This function will not only convert
+ the file name to the resource name, but also check that the resource name is correct for
+ this bundle file. fill_filenames will be called for each
+ resource in the table immediately after the read_dir function.
 
-	Переделал плагинную систему с введением функций fill_name и
-	fill_filename, а также поля page. Портировал модули grp, gob и pak на
-	новую систему плагинов.
+ Redesigned the plugin system with the introduction of the fill_name and
+ fill_filename, as well as the page fields. Ported the grp, gob, and pak modules to the
+ new plugin system.
 
-Сравнение размеров новой и старой программ:
-Новая:
-  991 binrw.c
-   80 binrw.h
-  325 restable.c
-   69 restable.h
-  134 grp.c
-   21 grp.h
-  159 gob.c
-   21 gob.h
-  158 pak.c
-   21 pak.h
-  373 main.c
- 2352 итого
-Старая:
-  991 binrw.c
-   79 binrw.h
-  494 resdir.c
-   42 resdir.h
-  160 grp.c
-   16 grp.h
-  180 gob.c
-   16 gob.h
-  175 pak.c
-   16 pak.h
-  457 main.c
- 2626 итого
+Comparison of new and old program sizes:
+New:
+991 binrw. c
+80 binrw. h
+325 restable. c
+69 restable. h
+134 grp. c
+21 grp. h
+159 gob. c
+21 gob. h
+158 pak. c
+21 pak. h
+373 main. c
+2352 total
+Old:
+991 binrw. c
+79 binrw. h
+494 resdir. c
+42 resdir. h
+160 grp. c
+16 grp. h
+180 gob. c
+16 gob. h
+175 pak. c
+16 pak. h
+457 main. c
+2626 total
 
-Сравнение модулей main не совсем честное, поскольку в старой программе больше
-таблица плагинов.
+The comparison of main modules is not entirely fair, since the old program has a larger
+table of plugins.
 
-	В дальнейшем в плагинную систему можно добавить дополнительные
-	функции для сохранения дополнительной информации о файлах в текстовый
-	файл и для восстановления этой информации из текстового файла.
+ In the future, you can add additional
+ functions to the plugin system to save additional information about files to a text
+ file and to restore this information from a text file.
 
-	Этот функционал будет использоваться для распаковки/упаковки файлов
-	формата rff и wad2/wad3. 
+ This functionality will be used for unpacking/packing
+ rff and wad2 / wad3 files. 
 
 03-10-2010
 
-	Портировал на новую систему плагинов и restable модуль viv.c, заодно исправив его (добавил
-	выравнивание ресурсов по смещению, кратному 4, исправил подсчёт размера каталога).
+ Ported the viv.c module to the new plugin system and restable, at the same time fixing it (added
+ alignment of resources to an offset multiple of 4, corrected the calculation of the directory size).
 
 04-10-2010
 
-	Переделать функции rt_realloc и rt_add_filename в функции rt_set_number,
-	rt_add_entry:
+ Convert the rt_realloc and rt_add_filename functions to the rt_set_number and rt_add_entry functions:
 
-/* В случае успеха возвращает TRUE, устанавливает rt->number = number и
-очищает все поля всех элементов rt->entries */
-	bool_t rt_set_number(restable_t *rt, uint32_t number);
+```c
+/ * Returns TRUE if successful, sets rt->number = number, and
+clears all fields of all rt->entries */
+bool_t rt_set_number (restable_t *rt, uint32_t number);
 
-/* В случае успеха возвращает TRUE, увеличивает rt->number и очищает добавленную
-запись. Последняя добавленная запись - пустая. */
-	bool_t rt_add_entry(restable_t *rt);
+/ * Returns TRUE on success, increments rt - >number, and clears the added
+record. The last record added is empty. */
+ bool_t rt_add_entry(restable_t *rt);
+```
 
-	Портировал на новую систему плагинов и restable модуль vpp.c.
+ Ported the vpp.c module to the new plugin system and restable.
 
-	Можно также унифицировать проверку допустимости имени ресурса. Проверку
-	имён файлов DOS можно оставить, а остальные проверки должны сводиться
-	к двум простым правилам: проверка максимальной длины имени ресурса и
-	проверка принадлежности каждого символа множеству допустимых для данного
-	формата символов.
+ You can also unify checking the validity of a resource name. 
+ You can leave out checking DOS file names, but the rest of the checks should be reduced
+ to two simple rules: checking the maximum length of the resource name and
+ checking whether each character belongs to the set of characters allowed for this
+ format.
 
-	Портировал на новую систему плагинов и restable модуль pack.c.
+ Ported the pack.c module to the new plugin system and restable.
 
-	Портировал на новую систему плагинов и restable модуль pack2.c.
+ Ported the pack2.c module to the new plugin system and restable.
 
-	Новая идея: вместо больших и похожих друг на друга функций
-	xxx_read_resources и xxx_write_resources написать функции поменьше:
-	xxx_read_resource и xxx_write_resource, а цикл по извлечению/добавлению
-	ресурсов вынести в функции pack и unpack.
+ New idea: instead of large and similar functions
+ xxx_read_resources and xxx_write_resources write smaller functions:
+ xxx_read_resource and xxx_write_resource, and put the loop for extracting / adding
+ resources in the pack and unpack functions.
 
-	bool_t rt_read_resource(resentry_t *re);
-	bool_t rt_write_resource(resentry_t *re, uint32_t page);
+ bool_t rt_read_resource(resentry_t *re);
+ bool_t rt_write_resource(resentry_t *re, uint32_t page);
 
-	Такое решение позволит в дальнейшем выполнять, например, выборочное
-	извлечение ресурсов.
+ This solution will allow you to perform, for example, selective
+ resource extraction in the future.
 
 05-10-2010
 
-	Портировал wad23.c на новую систему плагинов и restable.c.
+ Ported wad23. c to the new plugin system and restable. c.
 
-	Переписал строковые функции из модуля binrw.c так, что они теперь
-	дополнительно сообщают об ошибке, возвращая FALSE.
+ Rewrote string functions from the binrw.c module so that they now
+ additionally report an error, returning FALSE.
 
-	Добавил функции strnlower и strnupper в модуль binrw.c.
+ Added the strnlower and strnupper functions to the binrw.c module.
 
-	Переписал программу так, что она теперь использует функции
-	rt_set_number и rt_add_entry для добавления элементов в таблицу
-	ресурсов.
+ I rewrote the program so that it now uses the rt_set_number and rt_add_entry functions
+ to add items to the
+ resource table.
 
 06-10-2010
 
-	Написал функции freadf и fwritef, переписал все модули на использование
-	новых функций. Программа уменьшилась с 38 килобайт до 32. Предполагаю,
-	что уменьшение обусловлено резким сокращением количества и объёма
-	диагностических сообщений.
+ I wrote the freadf and fwritef functions, rewrote all modules to use
+ the new functions. The program has been reduced from 38 kilobytes to 32. I assume,
+ that the decrease is due to a sharp reduction in the number and volume
+ of diagnostic messages.
 
-	Объём проекта в строках наоборот увеличился (удивительно).
+ On the contrary, the project volume in rows has increased (surprisingly).
 
 07-10-2010
 
-	Написал модуль res.c для RES-файла игры Comanche 3. Замучился. Нужно
-	проверить на игре.
+ I wrote the res.c module for the RES file of the game Comanche 3. I was tormented. You need
+to check on the game.
 
-	Шифрование имён - это фигня, т.к. с ней я разобрался ещё тогда, когда
-	я играл в игру (это было 09-02-2003).
+ Encrypting names is bullshit, because I figured it out back when
+ I was playing a game (it was 09-02-2003).
 
-	Одна из заморочек файла ресурсов - это фиктивный ресурс с именем
-	\xD2OOT, поле смещения которого равно размеру заголовка файла с
-	каталогом, а в поле размера его указан 0.
+ One of the problems with the resource file is a dummy resource named
+ \xD2OOT, whose offset field is equal to the size of the header of the file with
+ the directory, and its size field is set to 0.
 
-	Вторая заморочка заключается в том, что перед каждым ресурсом записана
-	информация о следующем ресурсе, но в последнем ресурсе записана
-	информация не о фиктивном ресурсе, а о следующем за ним настоящем.
+ The second problem is that before each resource
+ , information about the next resource is recorded, but in the last resource
+ , information is recorded not about a fictitious resource, but about the present one following it.
 
-	Третье подозрительное место - это 16 нулевых байт, которые зачем-то
-	добавлены в конце файла.
+ The third suspicious place is 16 null bytes, which for some reason are not allowed.
+ added at the end of the file.
 
-	Четвёртая заморочка заключается в том, что ресурсы C3.SAV и SETUP.MDM
-	в RES-файле встречаются аж два раза. Они одинакового размера и идут
-	друг за другом.
+ The fourth problem is that the resources are C3.SAV and SETUP.MDMs
+ are already found twice in the RES file. They are the same size and follow
+ each other.
 
-	По планам остаётся реализовать следующие модули:
-		DPK4 - Starmageddon
-		IWAD, PWAD - Doom & Co
-		RFFP, RFFC - Blood (портировать на restable и добавить
-			сохранение и восстановление идентификаторов и типов
-			ресурсов)
-		DAT - Fallout
-		DAT - Fallout 2
-		LABN - Outlaws
+ We plan to implement the following modules:
+ DPK4-Starmageddon
+ IWAD, PWAD - Doom & Co
+ RFFP, RFFC-Blood (port to restable and add
+ saving and restoring resource IDs and types
+)
+ DAT-Fallout
+ DAT - Fallout 2
+ LABN - Outlaws
 
-	Протестировал модуль res.c, исправив попутно кучу недоработок.
-	Comanche 3 с собранным мной файлом ресурсов запустился и заработал.
+ I tested the res.c module, fixing a bunch of bugs along the way.
+ Comanche 3 started working with the resource file I collected.
 
 08-10-2010
 
-	Написал модуль dpk4.c и добавил поддержку декомпрессии и компрессии
-	с помощью библиотеки zlib. К сожалению извлекаются не все ресурсы,
-	а после сжатия размер файла по сравнению с исходным файлом из
-	дистрибутива игры возрастает аж в 2 раза. Смысла в сжатии нет?
+ I wrote the dpk4.c module and added support for decompression and compression
+ using the zlib library. Unfortunately, not all resources are extracted,
+ and after compression, the file size increases as much as 2 times compared to the source file from
+ the game distribution. There's no point in compressing it?
 
-	Просмотрел информацию о файле, созданном моей программой - ни один
-	ресурс не был сжат. Добавил диагностику ошибок сжатия и нашёл
-	ошибку в расчёте места под сжимаемые данные. Исправил ошибку -
-	теперь сжатый файл по размеру практически равен исходному.
+ I looked at the information about the file created by my program - not a single
+ resource was compressed. Added diagnostics of compression errors and found
+ an error in calculating the space for compressible data. Fixed an error -
+ now the compressed file size is almost equal to the original one.
 
-	Просмотрел информацию о неправильно расжатых файлах - их сжатый
-	размер оказался равен несжатому. Убрал разжатие ресурсов, разжатый
-	размер которых равен сжатому - сделал так, чтобы они извлекались
-	в исходном виде. Разжатие прошло без ошибок. Модуль dpk4.c
-	полностью отлажен.
+ I looked at information about incorrectly uncompressed files - their compressed
+ size was equal to the uncompressed one. Removed decompression of resources whose decompressed
+ size is equal to the compressed size - made them extracted
+ in their original form. Decompression was performed without errors. The dpk4.c module is
+ fully debugged.
 
-	Игра запустилась с созданным моей программой файлом.
+ The game started with the file created by my program.
 
 10-10-2010
 
-	Пытался реализовать модуль dat.c для распаковки и упаковки
-	DAT-файлов игры Fallout. Структура файла не тривиальна, а алгоритм
-	сжатия LZSS, применённый в DAT-файлах довольно редок.
+ Tried to implement dat.c module for unpacking and packaging
+ DAT files of the Fallout game. The file structure is not trivial, and
+ the LZSS compression algorithm used in DAT files is quite rare.
 
 11-10-2010
 
-	Добавил в форматную строку поддержку записи и чтения строк "sn".
+ Added support for writing and reading "sn" strings to the format string.
 
-	При этом длина читаемой строки определяется по числу, указатель
-	на которое идёт прямо за указателем указателя на строку.
-	Длина записываемой строки берётся из числа, следующему за
-	указателем на записываемую строку.
+ In this case, the length of the string to be read is determined by the number
+ whose pointer goes directly after the pointer pointer to the string.
+ The length of the recorded string is taken from the number following
+ a pointer to the string being written.
 
-	По этой же системе добавил поддержку форматных строк "cn" и "zn".
+ Using the same system, I added support for the format strings "cn"and " zn".
 
-	Добавил модуль dat2.c, поддерживающий DAT-файлы Fallout 2.
-	Проверка показала, что Fallout 2 не замечает подмены файла.
+ Added the dat2.c module that supports Fallout 2 DAT files.
+ Verification showed that Fallout 2 does not notice file substitution.
 
-	Портировал модуль rff.c на restable и новую систему модулей.
+ Ported the rff.c module to restable and the new module system.
 
 12-10-2010
 
-	Придумал метод, с помощью которого можно исключать дубликаты
-	файлов. В resentry_t можно добавить дополнительное поле
-	int32_t copyof, в котором будет записываться номер файла,
-	с которым совпадает содержимое данного файла. Для файлов,
-	не имеющих дубликатов или исходного файла из группы совпадающих
-	в это поле помещается индекс -1.
+ I came up with a method that can be used to exclude duplicate
+ files. You can add an additional field to resentry_t
+ int32_t copyof, which will record the file number
+ that matches the contents of this file. For files
+ that do not have duplicates or the source file from the matching group
+, the index -1 is placed in this field.
 
-	После заполнения структуры restable_t информацией о структуре
-	каталогов можно пройтись по всем файлам и сравнить по содержимому
-	файлы одинакового размера. Для файлов, у которых найдены дубликаты
-	в это поле можно записать номер первого файла, с которым совпадают
-	последующие. При записи ресурсов функцией add_resources будет
-	приниматься во внимание это поле и файлы, поле copyof у которых
-	больше нуля добавляться не будут, но поля offset, size, compression
-	и compressed будут заполняться копиями данных полей из файла-оригинала.
+ After filling in the restable_t structure with information about
+ the directory structure, you can go through all the files and compare the contents
+ of files of the same size. For files where duplicates are found
+ , you can enter the number of the first file in this field, which matches
+ the next ones. When writing resources with the add_resources function,
+ this field will be taken into account and files whose copyof field
+ is greater than zero will not be added, but the offset, size, compression
+ , and compressed fields will be filled in with copies of these fields from the original file.
 
-	Также задумал новую систематическую структуру для DAT-файлов.
-	Немного громоздко, зато понятно. Структуры, которые будут
-	использованы внутри модуля можно будет использовать независимо от
-	структуры restable_t в отдельной программе, если таковую понадобится
-	написать.
+ I also conceived a new systematic structure for DAT files.
+ A little cumbersome, but understandable. Structures that will be
+ the data inside the module can be used independently of
+ the restable_t structure in a separate program, if you need
+ to write one.
 
-	Основная загвоздка в поддержке формата DAT-файлов Fallout по-прежнему
-	заключается в написании декомпрессора и компрессора формата LZSS.
+ The main snag in supporting the DAT file format of Fallout is still
+ it consists of writing a decompressor and a compressor in the LZSS format.
 
-	Скачал исходники f1undat, в которых есть функционал для распаковки
-	ресурсов. Исходники декомпрессора, правда, большей частью
-	на Assembler.
+ I downloaded the f1undat source code, which has functionality for unpacking
+ resources. The source code of the decompressor, however, is mostly
+ in Assembler.
 
 13-10-2010
 
-	Нашёл ресурс с большим количеством примеров реализации компрессора
-	lzss на C.
+ I found a resource with a large number of examples of implementing an lzss compressor
+in C.
 
-	Написал функцию rt_check_overlaps, которая ищет копии ресурсов
-	и перекрывающиеся ресурсы. Во время работы функция заполняет
-	новое поле resentry_t - поле copyof, в которое помещается номер
-	ресурса, копией которого является данный ресурс. Если ресурс не
-	является копией, то в это поле помещается -1.
+ I wrote the rt_check_overlaps function, which searches for copies of resources
+ and overlapping resources. During operation, the function fills
+ in a new resentry_t field-the copyof field, which contains the number
+ of the resource that this resource is a copy of. If the resource is not
+ a copy, then -1 is placed in this field.
 
-	Проверка на файле pak1.pak из Daikatana показала, что функция
-	справляется с возложенной на неё работой.
+ A check on the pak1.pak file from Daikatana showed that the function
+ copes with the work assigned to it.
 
-	Теперь можно написать функцию сравнения файлов и функцию поиска
-	дубликатов файлов, которая аналогичным образом будет заполнять
-	поле copyof каждой из записей. Потом можно дописать особое поведение
-	в функции добавления ресурсов, чтобы она не добавляла дважды
-	одно и то же содержимое разных ресурсов, а лишь добавляла ссылку
-	на ранее добавленный ресурс-оригинал.
+ Now you can write a file comparison function and a search function
+ duplicate files, which will fill
+ in the copyof field of each record in the same way. Then you can add a special behavior
+ to the add resources function so that it doesn't add twice
+ the same content of different resources, but only added a link
+ to the previously added resource-the original one.
 
-	Написал функционал объединения дубликатов файлов, прописал его во
-	все модули, позволяющие объединенять ресурсы.
+ I wrote the functionality of combining duplicate files, registered it in
+ all modules that allow you to combine resources.
 
-	Протестировал функцию на файле pak1.pak игры Daikatana. Превосходно,
-	моя программа наконец-таки победила упаковщик Daikatana:
-		Размер оригинального файла:	167129921
-		Размер перепакованного файла:	164899416
-	Общая экономия - около 3 мегабайт.
+ I tested the function on the pak1.pak file of the Daikatana game. Excellent,
+ my program finally beat the Daikatana packer:
+ Original file size: 167129921
+ Size of the repacked file: 164899416
+ The total savings are about 3 megabytes.
 
-	Тестирование объединение дубликатов на примере файла data.dpk
-	Starmageddon 2
-		Оригинал:	288025136
-		Перепакованный:	276083021
-	Общая экономия - почти 12 мегабайт.
+ Testing combining duplicates using the example of the data.dpk file
+ Starmageddon 2
+ Original: 288025136
+ Repacked: 276083021
+ Total savings - almost 12 megabytes.
 
 
-	Можно добавить в структуру plugin_t дополнительное поле - возможность
-	объединять дубли ресурсов.
+ You can add an additional feature field to the plugin_t structure
+ combine resource duplicates.
 
-	Нужно вынести из функций *_add_resources подфункции *_add_resource,
-	при этом выравнивание ресурсов и цикл по ресурсам будут вынесесны
-	в головной модуль. То же самое можно сделать и с функциями
-	*_extract_resources, то есть вынести из них подфункции *_add_resource,
-	а цикл по ресурсам перенести в головной модуль.
+ You need to remove the *_add_resources subfunctions from the *_add_resources functions,
+ and the resource alignment and resource loop will be removed.
+ to the main module. The same can be done with functions
+ *_extract_resources, that is, remove the *_add_resource subfunctions from them,
+ and move the resource loop to the main module.
 
-	Можно добавить в головной модуль две дополнительные опции:
-	--nocompress/--compress и --nomerge/--merge. Как вариант, можно
-	сделать одну опцию --fast/--finish, которая будет отключать или
-	включать сжатие ресурсов, если оно поддерживается этим форматом и
-	слияние дубликатов, если слияние дубликатов возможно для этого
-	формата.
+ You can add two additional options to the main module:
+ --nocompress/--compress and --nomerge/--merge. Alternatively, you can
+ make one option --fast/--finish, which will disable or
+ enable resource compression if it is supported by this format and
+ merge duplicates if duplicate merging is possible for this
+ format.
 
 14-10-2010
 
-	Портировал программу на новую систему плагинов:
-	вместо функций add_resources(restable_t *rt, uint32_t page)
-		используется add_resource(restable_t *rt, uint32_t i),
-	вместо функций extract_resources(restable_t *rt, uint32_t page)
-		используется extract_resource(restable_t *rt, uint32_t i),
-	в структуру добавлено логическое поле merge.
+ Ported the program to a new plugin system:
+ instead of the functions add_resources(restable_t *rt, uint32_t page)
+ , add_resource(restable_t *rt, uint32_t i) is used,
+ instead of the extract_resources(restable_t *rt, uint32_t page)
+ functions, extract_resource(restable_t *rt, uint32_t i)
+ is used. The merge boolean field is added to the structure.
 
-	Работа по поиску дубликатов файлов и ресурсов и выравниванию
-	ресурсов при их добавлении перенесена в функции unpack, pack,
-	print. Поиск и слияние дубликатов выполняется лишь в том случае,
-	если поле merge структуры plugin_t истинно.
+ Work on finding duplicate files and resources and aligning
+ resources when adding them has been moved to the unpack, pack functions,
+ print. Duplicates are found and merged only
+ if the merge field of the plugin_t structure is true.
 
-	Написал функцию сравнения данных в кольцевых буферах ringcmp,
-	с её использованием написал функцию поиска наилучшего совпадения
-	блоков данных для алгоритмов группы LZ77. Всё это находится
-	в модуле ring.c
+ I wrote a function for comparing data in ring buffers ringcmp,
+ Using it, I wrote a function for finding the best match
+ of data blocks for algorithms of the LZ77 group. All this is
+ in the ring.c module
 
-	Написал новую функцию, более ресурсоёмкую, но и более систематичную:
-		bool_t dat_read_dir(restable_t *rt);
+ I wrote a new function that is more resource-intensive, but also more systematic:
+ bool_t dat_read_dir(restable_t *rt);
 
-	Написал функцию dat_to_rt и функцию dat_from_rt. Вторая уже достаточна
-	для написания правильной функции dat_prepare_dir, но перед записью
-	заголовка DAT, я хочу отсортировать пути и имена файлов по алфавиту.
+ I wrote the dat_to_rt function and the dat_from_rt function. The second one is already sufficient
+ to write the correct dat_prepare_dir function, but before writing
+ for the DAT header, I want to sort paths and filenames alphabetically.
 
 15-10-2010
 
-	Написал функции для сортировки структуры dat_t - dat_sort, для
-	подсчёта размера записываемого в DAT-файл каталога - dat_prepare_dir,
-	и для записи каталога в DAT-файл - dat_write_dir.
+ I wrote functions for sorting the dat_t - dat_sort structure, for
+ calculating the size of a directory written to a DAT file-dat_prepare_dir,
+ and for writing a directory to a DAT file-dat_write_dir.
 
-	Написал функцию dat_decmpress, поместил её в модуль dat_lzss.c
-	Сжатие ресурсов пока не поддерживается.
+ I wrote the dat_decmpress function and put it in the dat_lzss module. c
+ Resource compression is not supported yet.
 
-	Отладка не удалась - Fallout не работает с собранными мной файлами.
-	Fallout показывает экран "подождите" и завершает работу.
+ Debugging failed - Fallout doesn't work with the files I collected.
+ Fallout shows the "wait" screen and exits.
 
 16-10-2010
 
-	Протестировал модуль dat.c. Не без проблем, но удалось довести его
-	до рабочего состояния. Основная закавыка оказалась в том, что
-	имена каталогов и ресурсов записаны в верхнем регистре. Если имена
-	каталогов и ресурсов записать в нижнем регистре, то Fallout запускается
-	как ни в чём не бывало, хотя в файлах из дистрибутива игры все имена
-	каталогов и ресурсов записаны в верхнем регистре. Объяснений этому не
-	нахожу.
+ I tested the dat.c. module not without problems, but managed to bring it
+ to working condition. The main problem was that
+ the names of directories and resources are written in upper case. If the names are
+ directories and resources are written in lowercase, then Fallout starts
+ as if nothing had happened, although the files from the game's distribution contain all the names
+ directories and resources are written in uppercase. I can't
+ find any explanation for this.
 
 17-10-2010
 
-	Переписал функции freadf и fwritef, а так же все остальные, на которых
-	они основаны. Новые функции называются readf и writef. Форматная строка
-	стала более фичастой, сами функции более прямыми.
+ I rewrote the freadf and fwritef functions, as well as all the others on which
+ they are based. The new functions are called readf and writef. Format string
+ it has become more feature-rich, and the functions themselves are more direct.
 
-	Например, функция readsz, замена функции s_freadz, теперь читает файл
-	по порядку и не возвращается к уже прочитанному, по ходу чтения изменяя
-	размер буфера бод строку. То есть теперь она пригодна для чтения файлов
-	со строго последовательным доступом.
+ For example, the readsz function, a replacement for the s_freadz function, now reads the file
+ in order and does not return to what it has already read, changing the
+ buffer size of the baud string as it reads. In other words, it is now suitable for reading files
+ with strictly sequential access.
 
-	Другой пример - вместо функций frwite_zeros и fread_bytes теперь
-	используются fwritec и freadc, которые при передачи нулевого указателя
-	на буфер чтения/записи записывают нули или читают данные "в пустоту".
+ Another example is that instead of the frwite_zeros and fread_bytes functions, fwritec and freadc are now
+ used, which, when passing a null pointer
+ to the read/write buffer, write zeros or read data "to the void".
 
-	В функциях readf и writef введены спецификаторы длины аргумента
-	n и N. Первое - число с длиной, второе - указатель на число с длиной.
+ The readf and writef functions introduce argument length specifiers
+ n and N. The first is a number with a length, the second is a pointer to a number with a length.
 
 19-10-2010
 
-	Написал модуль binup.c - binary unpack/pack, в котором реализовал
-	аналоги функций из модуля binrw2.c, только эти функции называются
-	pack/unpack и работают с буфером памяти, а не файлом.
+ I wrote the binup.c - binary unpack/pack module, in which I implemented
+ analogs of functions from the binrw2.c module, only these functions are called
+ pack/unpack and work with a memory buffer, not a file.
 
-	Модуль rff.c был переписан с ипользованием binup.c. Его код
-	стал значительно меньше, чище и нагляднее. Следующий
-	запланированный ход - написание модуля text.c для парсинга
-	текстовых файлов, чтобы восстанавливать значение поля type из
-	текстового файла.	
+ The rff.c module was rewritten using binup. c. Its code
+ has become much smaller, cleaner, and more visual. The next
+ planned step is to write a text.c module for parsing
+ text files to recover the value of the type field from
+ a text file. 
 
-	Затем модули binrw.c, binrw2.c и binup.c были объединены в один
-	большой модуль bin.c
+ Then the binrw.c, binrw2.c, and binup.c modules were combined into one
+ large bin.c module
 
 20-10-10
 
-	Добавил в модуль bin.c функции scans и strtrim.
+ Added the scans and strtrim functions to the bin.c module.
 
-	Написал модуль meta.c для загрузки и сохранения метаданных.
+ I wrote the meta.c module for loading and saving metadata.
 
-	Добавил в модуль main.c режимы --savemeta и --loadmeta,
-	к режимам --pack и --unpack добавил опцию --meta.
+ Added the --savemeta and --loadmeta modes to the main.c module,
+ added the --meta option to the --pack and --unpack modes.
 
-	Протестировал написанный функционал на файле blood.rff, вроде
-	работает. Надо проверить на самой игре.
+ I tested the written functionality on the blood.rff file, it seems
+ to work. We need to check on the game itself.
 
-	Написанный код довольно грязный и нуждается в проверке.
+ The written code is quite dirty and needs to be checked.
 
-	Переписал также функции s_name и компанию с использованием
-	функции strrchr. Пока не тестировал - положил в модуль newnpe.c
+ I also rewrote the s_name and company functions using
+ the strrchr function. I haven't tested it yet - I put it in the newnpe.c module
 
-	Blood с файлом, собранным моей программой, не запускается.
+ Blood with the file collected by my program does not start.
 
 21-10-10
 
-	Написал простейшую заготовку для модуля ipwad.c. Никакой попытки
-	конвертировать имена ресурсов пока не делал.
+ I wrote a simple template for the ipwad.c module.I haven't made any attempt to
+ convert resource names yet.
 
 22-10-10
 
-	Наконец-таки написал модуль ipwad.c. То ли мозги работать лучше
-	начали, то-ли помогли прошлые наработки, но моудль я дописал
-	до рабочего состояния сегодня до конца. Модуль получился довольно
-	грязным, но рабочим.
+ Finally, I wrote the ipwad.c module. Whether brains work better
+ we started, whether past developments helped, but I added the moodle
+ up to working condition today until the end. The module turned out to be quite
+ dirty, but working.
 
-	Интересно, что в оригинальном файле doom.wad несколько раз
-	встречаются ресурсы с одинаковыми именами. Пока что мне такие
-	фокусы попадались только в RES-файле Commanche 3.
+ Interestingly, in the original doom file.wad
+ resources with the same name are encountered several times. So far, I
+'ve only seen such tricks in the Commanche 3 RES file.
 
-	Список файлов с одинаковыми именами:
-		dpbarexp
-		dpbdcls
-		dpbdopn
-		dpbgact
-		dpbgdth1
-		dpbgdth2
-		dpbgsit1
-		dpbgsit2
-		dpbrsdth
-		dpbrssit
-		dpclaw
-		dpdmact
-		dpdmpain
-		dpdorcls
-		dpdoropn
-		dpfirsht
-		dpfirxpl
-		dpgetpow
-		dpitemup
-		dpitmbk
-		dpnoway
-		dpoof
-		dppdiehi
-		dppistol
-		dppldeth
-		dpplpain
-		dppodth1
-		dppodth2
-		dppodth3
-		dppopain
-		dpposact
-		dpposit1
-		dpposit2
-		dpposit3
-		dppstart
-		dppstop
-		dppunch
-		dprlaunc
-		dprxplod
-		dpsawful
-		dpsawhit
-		dpsawidl
-		dpsawup
-		dpsgcock
-		dpsgtatk
-		dpsgtdth
-		dpsgtsit
-		dpshotgn
-		dpslop
-		dpstnmov
-		dpswtchn
-		dpswtchx
-		dptelept
-		dptink
-		dpwpnup
-		dsbarexp
-		dsbdcls
-		dsbdopn
-		dsbgact
-		dsbgdth1
-		dsbgdth2
-		dsbgsit1
-		dsbgsit2
-		dsbrsdth
-		dsbrssit
-		dsclaw
-		dsdmact
-		dsdmpain
-		dsdorcls
-		dsdoropn
-		dsfirsht
-		dsfirxpl
-		dsgetpow
-		dsitemup
-		dsitmbk
-		dsnoway
-		dsoof
-		dspdiehi
-		dspistol
-		dspldeth
-		dsplpain
-		dspodth1
-		dspodth2
-		dspodth3
-		dspopain
-		dsposact
-		dsposit1
-		dsposit2
-		dsposit3
-		dspstart
-		dspstop
-		dspunch
-		dsrlaunc
-		dsrxplod
-		dssawful
-		dssawhit
-		dssawidl
-		dssawup
-		dssgcock
-		dssgtatk
-		dssgtdth
-		dssgtsit
-		dsshotgn
-		dsslop
-		dsstnmov
-		dsswtchn
-		dsswtchx
-		dstelept
-		dstink
-		dswpnup
+ List of files with the same name:
+ dpbarexp
+ dpbdcls
+ dpbdopn
+ dpbgact
+ dpbgdth1
+ dpbgdth2
+ dpbgsit1
+ dpbgsit2
+ dpbrsdth
+ dpbrssit
+ dpclaw
+ dpdmact
+ dpdmpain
+ dpdorcls
+ dpdoropn
+ dpfirsht
+ dpfirxpl
+ dpgetpow
+ dpitemup
+ dpitmbk
+ dpnoway
+ dpoof
+ dppdiehi
+ dppistol
+ dppldeth
+ dpplpain
+ dppodth1
+ dppodth2
+ dppodth3
+ dppopain
+ dpposact
+ dpposit1
+ dpposit2
+ dpposit3
+ dppstart
+ dppstop
+ dppunch
+ dprlaunc
+ dprxplod
+ dpsawful
+ dpsawhit
+ dpsawidl
+ dpsawup
+ dpsgcock
+ dpsgtatk
+ dpsgtdth
+ dpsgtsit
+ dpshotgn
+ dpslop
+ dpstnmov
+ dpswtchn
+ dpswtchx
+ dptelept
+ dptink
+ dpwpnup
+ dsbarexp
+ dsbdcls
+ dsbdopn
+ dsbgact
+ dsbgdth1
+ dsbgdth2
+ dsbgsit1
+ dsbgsit2
+ dsbrsdth
+ dsbrssit
+ dsclaw
+ dsdmact
+ dsdmpain
+ dsdorcls
+ dsdoropn
+ dsfirsht
+ dsfirxpl
+ dsgetpow
+ dsitemup
+ dsitmbk
+ dsnoway
+ dsoof
+ dspdiehi
+ dspistol
+ dspldeth
+ dsplpain
+ dspodth1
+ dspodth2
+ dspodth3
+ dspopain
+ dsposact
+ dsposit1
+ dsposit2
+ dsposit3
+ dspstart
+ dspstop
+ dspunch
+ dsrlaunc
+ dsrxplod
+ dssawful
+ dssawhit
+ dssawidl
+ dssawup
+ dssgcock
+ dssgtatk
+ dssgtdth
+ dssgtsit
+ dsshotgn
+ dsslop
+ dsstnmov
+ dsswtchn
+ dsswtchx
+ dstelept
+ dstink
+ dswpnup
 
-	Это наталкивает на мысль попытаться сделать функцию поиска
-	дублей имён ресурсов.
+ This suggests the idea of trying to make a search function
+ duplicates of resource names.
 
 09-11-2010
 
-	Добавил в модуль rff.c отображение отметки времени ресурса.
+ Added resource timestamp display to the rff.c module.
 
 13-11-2010
 
-	Добавил в структуру плагина булевы поля meta и time,
-	функции save_meta и load_meta.
+ Added the meta and time Boolean fields to the plugin structure,
+ the save_meta and load_meta functions.
 
-	Переделал функции unpack, pack, print, savemeta с учётом
-	функционала плагинов для загрузки и сохранения метаданных.
-	Удалил функцию loadmeta.
+ Redesigned the unpack, pack, print, and savemeta functions, taking into account
+ the functionality of plugins for loading and saving metadata.
+ Removed the loadmeta function.
 
-	Реализовал функции для переноса времени модификации файла
-	из файла-пачки на файл и из файла в файл-пачку:
-	rt_get_timestamp и rt_set_timestamp
+ Implemented functions for transferring the modification
+ time of a file from a batch file to a file and from a file to a batch file:
+ rt_get_timestamp and rt_set_timestamp
 
-	Проверил перенос отметок времени на примере rff-файла.
+ I checked the transfer of time stamps using the example of an rff file.
 
 29-12-2010
 
-	Адаптировал утилиту lzss.c от Haruhiko Okumura в модуль
-	lzss.c.
+ Adapted the lzss.c utility from Haruhiko Okumura to the module
+ lzss.c.
 
-	Переделал модуль pack2_lz.c в модуль c_pack2.c, создал
-	модули c_zlib.c, c_lzss.c. Суть переделки состоит в том,
-	что теперь все функции компрессии/декомпрессии приведены
-	к единому интерфейсу:
-		size_t dsize(size_t ssize);
+ I changed the pack2_lz.c module into the c_pack2.c
+ module, created the c_zlib.c, c_lzss.c modules. The essence of the change is,
+ that now all compression/decompression functions are brought
+ to a single interface:
+ size_t dsize(size_t ssize);
 
-		bool_t compress(unsigned char *s, size_t ssize, unsigned char *d, size_t *dsize, int level);
-		или
-		bool_t compress(unsigned char *s, size_t ssize, unsigned char *d, size_t *dsize);
+ bool_t compress(unsigned char *s, size_t ssize, unsigned char *d, size_t *dsize, int level);
+ or
+ bool_t compress(unsigned char *s, size_t ssize, unsigned char *d, size_t *dsize);
 
-		bool_t decompress(unsigned char *s, size_t ssize, unsigned char *d, size_t dsize);
+ bool_t decompress(unsigned char *s, size_t ssize, unsigned char *d, size_t dsize);
 
-	Написал модуль c_dat.c с использованием c_lzss.c. Протестировал - работает.
+ I wrote the c_dat.c module using c_lzss. c. Tested it and it works.
 
 11-01-2011
 
-	В заголовке формата RFF, в поле версии младшие два байта во всех исследованных
-	мной образцах файлов принимают следующие значения:
-	2 и 0 - формат условно названный ранее Plain RFF,
-	3 и 1 - формат условно названный ранее Crypted RFF,
-	3 и 0 - формат, создаваемый одной из доступных версий программы BARF.
-	
-	В соответствии с этим, я назвал эти форматы rff20, rff30, rff31.
-	
-	Сегодня я добавил поддержку формата rff30, который отличался от rff31
-	только способом шифрования каталога и соответствующим образом
-	переименовал все модули.
+ In the RFF format header, in the version field, the lower two bytes in all
+ the file samples I examined take the following values::
+ 2 and 0 are the previously named Plain RFF format,
+ 3 and 1 are the previously named Crypted RFF format,
+ and 3 and 0 are the format created by one of the available versions of the BARF program.
+ 
+ According to this, I named these formats rff20, rff30, rff31.
+ 
+ Today I added support for the rff30 format, which differed from rff31
+ only in the way the directory was encrypted, and
+ renamed all modules accordingly.
 
 17-01-2011
 
-	Доделал загрузку метаданных. Обнаружил, что в blood.rff есть ресурсы с
-	одинаковыми именами:
-		BAT1D1.SEQ
-		BEST1D1.SEQ
-		BEST2D1.SEQ
-		CERB1E1.SEQ
-		CULT1D3B.SEQ
-		CULT2E1.SEQ
-		GOST1M1.SEQ
-		HAND1D1.SEQ
-		PLAY1D1.SEQ
-		PLAY1M1.SEQ
-		PLAY1M4.SEQ
-		POD1CLOS.SEQ
-		POD2CLOS.SEQ
-		PRIS1D1.SEQ
-		RAT1D1.SEQ
-		SPID3A2.SEQ
-		SPID3D1.SEQ
-		SPID3D2.SEQ
-		SPID3D3.SEQ
-		SPID3I1.SEQ
-		SPID3M1.SEQ
-		SPID3M2.SEQ
-		TBOG1D1.SEQ
-		TENT1D2.SEQ
-		TENT1DOW.SEQ
-		TENT2D2.SEQ
-		TENT2DOW.SEQ
+ Finished loading metadata. I found that blood.rff has resources with
+ the same names:
+ BAT1D1. SEQ
+ BEST1D1.SEQ
+ BEST2D1.SEQ
+ CERB1E1.SEQ
+ CULT1D3B.SEQ
+ CULT2E1.SEQ
+ GOST1M1.SEQ
+ HAND1D1.SEQ
+ PLAY1D1.SEQ
+ PLAY1M1.SEQ
+ PLAY1M4.SEQ
+ POD1CLOS.SEQ
+ POD2CLOS.SEQ
+ PRIS1D1.SEQ
+ RAT1D1.SEQ
+ SPID3A2.SEQ
+ SPID3D1.SEQ
+ SPID3D2.SEQ
+ SPID3D3.SEQ
+ SPID3I1.SEQ
+ SPID3M1.SEQ
+ SPID3M2.SEQ
+ TBOG1D1.SEQ
+ TENT1D2.SEQ
+ TENT1DOW.SEQ
+ TENT2D2.SEQ
+ TENT2DOW.SEQ
 
 18-01-2011
 
-	Написал функции s_sprintf, rt_rename, is_equal_blocks для того, чтобы на их базе
-	в дальнейшем организовать корректную обработку ресурсов с одинаковыми именами.
+ I wrote the s_sprintf, rt_rename, and is_equal_blocks functions in order to use them
+ in the future to organize correct processing of resources with the same names.
 
-	Переименовал функции strupper, strlower, strnupper, strnlower соответственно в
-	s_strupper, s_strlower, s_strnupper, s_strnlower.
+ Renamed the strupper, strlower, strnupper, and strnlower functions to s_strupper, s_strlower, s_strnupper,
+ and s_strnlower, respectively.
 
 19-01-2011
 
-	Добавил функцию s_let, переделал функции s_strcpy, s_strncpy, s_strcat, s_strncat
-	в функции sn_strcpy, sn_strncpy, sn_strcat, sn_strncat.
+ Added the s_let function, converted the s_strcpy, s_strncpy, s_strcat, and s_strncat functions to the sn_strcpy, sn_strncpy, sn_strcat, and sn_strncat
+ functions.
 
-	На основе s_let и sn_strcpy, sn_strncpy, sn_strcat, sn_strncat реализовал старые
-	функции s_strcpy, s_strncpy, s_strcat, s_strncat.
+ Based on s_let and sn_strcpy, sn_strncpy, sn_strcat, sn_strncat implemented the old
+ functions s_strcpy, s_strncpy, s_strcat, s_strncat.
 
-	Переделал функцию s_sprintf в функцию snv_sprintf.
+ Converted the s_sprintf function to the snv_sprintf function.
 
-	На основе s_let и snv_sprintf реализовал функцию s_sprintf.
+ Based on s_let and snv_sprintf, I implemented the s_sprintf function.
 
-	Добавил два регресионных теста для функции s_sprintf. Все переделанные функции
-	успешно прошли процедуру регресионного тестирования.
+ Added two regression tests for the s_sprintf function. All redesigned functions
+ have successfully passed the regression testing procedure.
 
 27-01-2011
 
-	Переделал функции s_uppath, s_path, s_pathname, s_name, s_nameext, s_ext в
-	функции sn_uppath, sn_path, sn_pathname, sn_name, sn_nameext, sn_ext.
+ Changed the functions s_uppath, s_path, s_pathname, s_name, s_nameext, s_ext to the
+ functions sn_uppath, sn_path, sn_pathname, sn_name, sn_nameext, sn_ext.
 
-	На основе s_let и sn_uppath, sn_path, sn_pathname, sn_name, sn_nameext, sn_ext
-	реализовал функции s_uppath, s_path, s_pathname, s_name, s_nameext, s_ext.
+ Based on s_let and sn_uppath, sn_path, sn_pathname, sn_name, sn_nameext, sn_ext
+ implemented the functions s_uppath, s_path, s_pathname, s_name, s_nameext, s_ext.
 
-	Регрессионные тесты завершились успешно.
+ The regression tests were completed successfully.
 
 01-02-2011
 
-	Написал и почти отладил функцию rt_fix_loaded, которая должна заниматься
-	поиском дублей, поиском ссылок на одинаковые блоки, поиском пересечений
-	блоков, а также поиском одинаковых имён файлов.
+ I wrote and almost debugged the rt_fix_loaded function, which should
+ search for duplicates, search for links to identical blocks, search
+ for block intersections, and search for identical file names.
 
-	Переписал функцию проверки каталога rt_fix взамен rt_fix_loaded. Сделал
-	по принципу чем проще, тем лучше. Действительно получилось лучше - объём
-	меньше, сложность ниже, скорость работы на глаз не изменилась.
+ Rewrote the function of checking the rt_fix directory instead of rt_fix_loaded. I did
+ it on the principle of the simpler, the better. It really turned out better - the volume
+ is smaller, the complexity is lower, and the speed of work has not changed by eye.
 
-	Провёл чистку: удалил rt_fix_loaded, rt_search_overlaps, rt_search_doubles,
-	rt_sort и т.п. Объём проекта после чистки вновь стал меньше 10000 строк.
+ Cleaned up: removed rt_fix_loaded, rt_search_overlaps, rt_search_doubles,
+ rt_sort, etc. The project size after cleaning again became less than 10000 lines.
 
-	Протестировал разборку и сборку blood.rff, собирается файл того же размера.
-	Количество и порядок ресурсов сохраняется.
+ I tested the disassembly and assembly of blood. rff, and a file of the same size is being assembled.
+ The number and order of resources is preserved.
 
 09-02-2011
 
-	В алгоритме сжатия pack2 управляющий байт со значением 0xFF используется
-	в качестве индикатора конца сжатого потока. Некоторое время назад я
-	соответствующим образом исправил декодировщик, а сегодня исправил
-	кодировщик.
+ In the pack2 compression algorithm, the control byte with the value 0xFF is used
+ as an indicator of the end of the compressed stream. Some time ago, I
+ fixed the decoder accordingly, and today I fixed it
+ the encoder.
 
-	Объединил все функции *_fadd и *_fextract в функции c_fadd и c_fextract.
+ Combined all the *_fadd and *_fextract functions into the c_fadd and c_fextract functions.
 
-	Появилась мысль немного поменять логику. c_fadd в случае если данные не
-	были сжаты, должна возвращать сжатый размер равный нулю, а не равный
-	несжатому размеру. Сделал.
+ There was an idea to change the logic a little. c_fadd, if the data was not
+ compressed, should return a compressed size equal to zero, not equal
+ to the uncompressed size. Did.
 
 08-11-2011
 
-    Анализ соответствий типа записи и расширения в RFF-файле:
+ Analysis of record type and extension matches in an RFF file:
 
-	type    ext
+ type ext
 
-	0       MNU                     0       0000
-	1       TXT, SFX, MID           1       0001
-	16      MAP, RAW, TMB           0 + 16  0000
-	17      WAV, KVX, QAV           1 + 16  0001 Прочие QAV
-	20      QBM, QFN                4 + 16  0100
-	21      SEQ                     5 + 16  0101
-	24      FLU, TLU, DAT, CLU      8 + 16  1000
-	25      PLU, PAL, QAV           9 + 16  1001 Экранный QAV
+ 0 MNU 0 0000
+ 1 TXT, SFX, MID 1 0001
+ 16 MAP, RAW, TMB 0 + 16 0000
+ 17 WAV, KVX, QAV 1 + 16 0001 Other QAV
+ 20 QBM, QFN 4 + 16 0100
+ 21 SEQ 5 + 16 0101
+ 24 FLU, TLU, DAT, CLU 8 + 16 1000
+ 25 PLU, PAL, QAV 9 + 16 1001 On-screen QAV
 
 11-01-2013
 
-    На компьютере нашёл все каталоги pup и выполнил сравнение. В результате
-    осталось два разных каталога. В обоих каталогах программа не собиралась.
-    Исправил программу в этом каталоге и собрал её.
+ On the computer, I found all the pup directories and performed a comparison. As a result
+ , there are two different directories left. The program was not built in both directories.
+ Fixed the program in this directory and built it.
 
-    При изучении исходников был удивлён, что поддержка rff-файлов выполнена
-    полностью. Потестировал на трёх rff31-файлах из blood: распаковал и
-    запаковал обратно. Подменил собранные файлы в каталоге с игрой. Игра
-    после замены продолжала работать.
+ When studying the source code, I was surprised that rff files were
+ fully supported. Tested on three rff31 files from blood: unpacked and
+ packed back. Changed the collected files in the game folder. The game
+ continued to work after the substitution.
 
-    Из неоконченных функций остался, видимо, плагин поддержки IWAD/PWAD.
-    Сомневаюсь, что смогу довести его до ума.
+ Apparently, the IWAD/PWAD support plugin remains among the unfinished functions.
+ I doubt I can bring it to mind.
+
