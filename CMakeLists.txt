@@ -29,12 +29,10 @@ find_package(TermPOD REQUIRED)
 
 # pup executable
 add_executable(${PROJECT_NAME} ${PUP_SOURCES}) 
-target_compile_options(${PROJECT_NAME} PUBLIC ${ZLIB_CFLAGS} ${TERMPOD_CFLAGS})
-target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIR}
-	${TERMPOD_INCLUDE_DIR} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES} -ltermpod)
+target_compile_options(${PROJECT_NAME} PUBLIC ${ZLIB_CFLAGS} ${TERMPOD_CFLAGS})
+target_include_directories(${PROJECT_NAME} PUBLIC ZLIB::ZLIB TermPOD::termpod $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(${PROJECT_NAME} PUBLIC ZLIB::ZLIB TermPOD::termpod)
 
 # test executable
 add_executable(test bin.c test.c bin.h)
