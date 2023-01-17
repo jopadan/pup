@@ -372,32 +372,20 @@ bool_t xxx_unpack_files(FILE *file, resdir_t *dir, const char *dst_path);
  new plugin system.
 
 Comparison of new and old program sizes:
-New:
-991 binrw. c
-80 binrw. h
-325 restable. c
-69 restable. h
-134 grp. c
-21 grp. h
-159 gob. c
-21 gob. h
-158 pak. c
-21 pak. h
-373 main. c
-2352 total
-Old:
-991 binrw. c
-79 binrw. h
-494 resdir. c
-42 resdir. h
-160 grp. c
-16 grp. h
-180 gob. c
-16 gob. h
-175 pak. c
-16 pak. h
-457 main. c
-2626 total
+File|New|Old|
+---|---|---
+binrw.c|991|991
+binrw.h|80|79
+restable.c|325|494
+restable.h|69|42
+grp.c|134|160
+grp.h|21|16
+gob.c|159|180
+gob.h|21|16
+pak.c|158|175
+pak.h|21|16
+main.c|373|457
+total|2352|2626
 
 The comparison of main modules is not entirely fair, since the old program has a larger
 table of plugins.
@@ -752,116 +740,117 @@ in C.
 've only seen such tricks in the Commanche 3 RES file.
 
  List of files with the same name:
- dpbarexp
- dpbdcls
- dpbdopn
- dpbgact
- dpbgdth1
- dpbgdth2
- dpbgsit1
- dpbgsit2
- dpbrsdth
- dpbrssit
- dpclaw
- dpdmact
- dpdmpain
- dpdorcls
- dpdoropn
- dpfirsht
- dpfirxpl
- dpgetpow
- dpitemup
- dpitmbk
- dpnoway
- dpoof
- dppdiehi
- dppistol
- dppldeth
- dpplpain
- dppodth1
- dppodth2
- dppodth3
- dppopain
- dpposact
- dpposit1
- dpposit2
- dpposit3
- dppstart
- dppstop
- dppunch
- dprlaunc
- dprxplod
- dpsawful
- dpsawhit
- dpsawidl
- dpsawup
- dpsgcock
- dpsgtatk
- dpsgtdth
- dpsgtsit
- dpshotgn
- dpslop
- dpstnmov
- dpswtchn
- dpswtchx
- dptelept
- dptink
- dpwpnup
- dsbarexp
- dsbdcls
- dsbdopn
- dsbgact
- dsbgdth1
- dsbgdth2
- dsbgsit1
- dsbgsit2
- dsbrsdth
- dsbrssit
- dsclaw
- dsdmact
- dsdmpain
- dsdorcls
- dsdoropn
- dsfirsht
- dsfirxpl
- dsgetpow
- dsitemup
- dsitmbk
- dsnoway
- dsoof
- dspdiehi
- dspistol
- dspldeth
- dsplpain
- dspodth1
- dspodth2
- dspodth3
- dspopain
- dsposact
- dsposit1
- dsposit2
- dsposit3
- dspstart
- dspstop
- dspunch
- dsrlaunc
- dsrxplod
- dssawful
- dssawhit
- dssawidl
- dssawup
- dssgcock
- dssgtatk
- dssgtdth
- dssgtsit
- dsshotgn
- dsslop
- dsstnmov
- dsswtchn
- dsswtchx
- dstelept
- dstink
- dswpnup
+ file|
+ ---|
+ dpbarexp|
+ dpbdcls|
+ dpbdopn|
+ dpbgact|
+ dpbgdth1|
+ dpbgdth2|
+ dpbgsit1|
+ dpbgsit2|
+ dpbrsdth|
+ dpbrssit|
+ dpclaw|
+ dpdmact|
+ dpdmpain|
+ dpdorcls|
+ dpdoropn|
+ dpfirsht|
+ dpfirxpl|
+ dpgetpow|
+ dpitemup|
+ dpitmbk|
+ dpnoway|
+ dpoof|
+ dppdiehi|
+ dppistol|
+ dppldeth|
+ dpplpain|
+ dppodth1|
+ dppodth2|
+ dppodth3|
+ dppopain|
+ dpposact|
+ dpposit1|
+ dpposit2|
+ dpposit3|
+ dppstart|
+ dppstop|
+ dppunch|
+ dprlaunc|
+ dprxplod|
+ dpsawful|
+ dpsawhit|
+ dpsawidl|
+ dpsawup|
+ dpsgcock|
+ dpsgtatk|
+ dpsgtdth|
+ dpsgtsit|
+ dpshotgn|
+ dpslop|
+ dpstnmov|
+ dpswtchn|
+ dpswtchx|
+ dptelept|
+ dptink|
+ dpwpnup|
+ dsbarexp|
+ dsbdcls|
+ dsbdopn|
+ dsbgact|
+ dsbgdth1|
+ dsbgdth2|
+ dsbgsit1|
+ dsbgsit2|
+ dsbrsdth|
+ dsbrssit|
+ dsclaw|
+ dsdmact|
+ dsdmpain|
+ dsdorcls|
+ dsdoropn|
+ dsfirsht|
+ dsfirxpl|
+ dsgetpow|
+ dsitemup|
+ dsitmbk|
+ dsnoway|
+ dsoof|
+ dspdiehi|
+ dspistol|
+ dspldeth|
+ dsplpain|
+ dspodth1|
+ dspodth2|
+ dspopain|
+ dsposact|
+ dsposit1|
+ dsposit2|
+ dsposit3|
+ dspstart|
+ dspstop|
+ dspunch|
+ dsrlaunc|
+ dsrxplod|
+ dssawful|
+ dssawhit|
+ dssawidl|
+ dssawup|
+ dssgcock|
+ dssgtatk|
+ dssgtdth|
+ dssgtsit|
+ dsshotgn|
+ dsslop|
+ dsstnmov|
+ dsswtchn|
+ dsswtchx|
+ dstelept|
+ dstink|
+ dswpnup|
 
  This suggests the idea of trying to make a search function
  duplicates of resource names.
@@ -923,33 +912,35 @@ in C.
 
  Finished loading metadata. I found that blood.rff has resources with
  the same names:
- BAT1D1. SEQ
- BEST1D1.SEQ
- BEST2D1.SEQ
- CERB1E1.SEQ
- CULT1D3B.SEQ
- CULT2E1.SEQ
- GOST1M1.SEQ
- HAND1D1.SEQ
- PLAY1D1.SEQ
- PLAY1M1.SEQ
- PLAY1M4.SEQ
- POD1CLOS.SEQ
- POD2CLOS.SEQ
- PRIS1D1.SEQ
- RAT1D1.SEQ
- SPID3A2.SEQ
- SPID3D1.SEQ
- SPID3D2.SEQ
- SPID3D3.SEQ
- SPID3I1.SEQ
- SPID3M1.SEQ
- SPID3M2.SEQ
- TBOG1D1.SEQ
- TENT1D2.SEQ
- TENT1DOW.SEQ
- TENT2D2.SEQ
- TENT2DOW.SEQ
+ file|
+ ---|
+ BAT1D1. SEQ|
+ BEST1D1.SEQ|
+ BEST2D1.SEQ|
+ CERB1E1.SEQ|
+ CULT1D3B.SEQ|
+ CULT2E1.SEQ|
+ GOST1M1.SEQ|
+ HAND1D1.SEQ|
+ PLAY1D1.SEQ|
+ PLAY1M1.SEQ|
+ PLAY1M4.SEQ|
+ POD1CLOS.SEQ|
+ POD2CLOS.SEQ|
+ PRIS1D1.SEQ|
+ RAT1D1.SEQ|
+ SPID3A2.SEQ|
+ SPID3D1.SEQ|
+ SPID3D2.SEQ|
+ SPID3D3.SEQ|
+ SPID3I1.SEQ|
+ SPID3M1.SEQ|
+ SPID3M2.SEQ|
+ TBOG1D1.SEQ|
+ TENT1D2.SEQ|
+ TENT1DOW.SEQ|
+ TENT2D2.SEQ|
+ TENT2DOW.SEQ|
 
 18-01-2011
 
@@ -1017,16 +1008,16 @@ in C.
 
  Analysis of record type and extension matches in an RFF file:
 
- type ext
-
- 0 MNU 0 0000
- 1 TXT, SFX, MID 1 0001
- 16 MAP, RAW, TMB 0 + 16 0000
- 17 WAV, KVX, QAV 1 + 16 0001 Other QAV
- 20 QBM, QFN 4 + 16 0100
- 21 SEQ 5 + 16 0101
- 24 FLU, TLU, DAT, CLU 8 + 16 1000
- 25 PLU, PAL, QAV 9 + 16 1001 On-screen QAV
+ type|ext|
+---|---|
+ 0 MNU|0 0000
+ 1 TXT, SFX, MID| 1 0001
+ 16 MAP, RAW, TMB| 0 + 16 0000
+ 17 WAV, KVX, QAV| 1 + 16 0001 Other QAV
+ 20 QBM, QFN| 4 + 16 0100
+ 21 SEQ| 5 + 16 0101
+ 24 FLU, TLU, DAT, CLU| 8 + 16 1000
+ 25 PLU, PAL, QAV| 9 + 16 1001 On-screen QAV
 
 11-01-2013
 
