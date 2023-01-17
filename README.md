@@ -61,6 +61,8 @@ List of supported formats:
     rff30     - RFF-files of Blood, version 3.0
     rff31     - RFF-files of Blood, version 3.1
     labn      - LABN-files of Outlaws
+    pod       - POD[1-6]-files of Terminal Reality games
+    epd       - EPD-files of Terminal Reality games
 
 List of supported compression algorithms:
 
@@ -70,6 +72,7 @@ List of supported compression algorithms:
 List of supported checksums:
 
     Supported plugins:
+    ccitt32
 
 List of formats to be implemented:
 
