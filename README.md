@@ -4,8 +4,7 @@ Unpacker and Game Resource Packer PUP
 About
 -----
 
-The program is called PUP - Packer/UnPacker (the word pup can also be translated from English as "puppy"). The program has several modes of operation:
-
+PUP - Packer/UnPacker (pup as in "puppy").
 
 Usage
 -------------
@@ -27,7 +26,7 @@ Usage
 Dependencies
 ------------
 
-[zlib][]
+[zlib]: https://zlib.net/
 
 Building
 --------
@@ -35,9 +34,6 @@ Building
     $ cmake . --install-prefix=/usr
 
     $ make install
-
-    Optional original sources:
-    $ ./make.sh
 
 Status
 ------
