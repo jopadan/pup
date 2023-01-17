@@ -118,7 +118,7 @@ a string is a DOS file name (checking scheme 8.3 and valid characters).
  Designed a new standard packing/unpacking scheme:
 
 Packaging:
-
+```c
 / * Scans the src_path directory for files to pack,
 fills in resource names, calculates the size of the header with the directory
 (if the directory should be located at the beginning of the file), sets
@@ -137,9 +137,9 @@ bool_t xxx_pack_files(FILE *file, resdir_t *dir, const char *src_path);
  Goes to the beginning of the resource file, writes the header
 filled in the ready resource directory after the header or recorded data.*/
 bool_t xxx_write_dir(FILE *file, resdir_t *dir);
-
+```
 Unpacking it:
-
+```c
 / * Reads a directory from a resource file, fills in the names of files that
 will be used when extracting resources to files. */
 bool_t xxx_read_dir(FILE *file, resdir_t *dir);
@@ -149,27 +149,27 @@ void xxx_print_dir(resdir_t *dir);
 
 / * Retrieves all resources from the resource file. */
 bool_t xxx_unpack_files(FILE *file, resdir_t *dir, const char *dst_path);
-
+```
  The grp.c program has been rewritten for a new standard packaging/unpacking scheme.
  The program turned out to be very compact, all the logic of the program works
  viewed easily. This is probably the most optimal scheme
  packaging/unpacking. In the future, I will use it.
 
  The next plan is to build packers / unpackagers
-pak. c
-gob. c
-pack.c
+ pak. c
+ gob. c
+ pack.c
  under the new packaging/unpacking scheme.
 
  Then you can start implementing
-the vpp.c packers/decompressers (Red Faction,
+ the vpp.c packers/decompressers (Red Faction,
  you will need to write vpp_unpack_files),
-viv. c (NFS)
-dpk4. c (Starmageddon, without decompressing compressed resources)
-pack2. c (Daikatana,
-for starters without decompressing compressed resources)
-wad2. c (Quake, Half-Life, without converting images)
-wad. c (Doom, Heretic, Hexen, Strife,
+ viv. c (NFS)
+ dpk4. c (Starmageddon, without decompressing compressed resources)
+ pack2. c (Daikatana,
+ for starters without decompressing compressed resources)
+ wad2. c (Quake, Half-Life, without converting images)
+ wad. c (Doom, Heretic, Hexen, Strife,
  without converting images)
 
 17-09-2010
@@ -331,10 +331,10 @@ wad. c (Doom, Heretic, Hexen, Strife,
  the file name to the resource name and return it. If the resulting resource name is not
  correct for this format, then the resource name is returned instead
  NULL. The same goes for get_filename.
-
+```c
  void get_resname(char **resname, const char *filename);
  void get_filename(char **filename, const char *resname);
-
+```
  If necessary, these functions can analyze or fill
  in additional fields, such as in the wad23.c module.
 
@@ -444,10 +444,10 @@ record. The last record added is empty. */
  xxx_read_resources and xxx_write_resources write smaller functions:
  xxx_read_resource and xxx_write_resource, and put the loop for extracting / adding
  resources in the pack and unpack functions.
-
+```c
  bool_t rt_read_resource(resentry_t *re);
  bool_t rt_write_resource(resentry_t *re, uint32_t page);
-
+```
  This solution will allow you to perform, for example, selective
  resource extraction in the future.
 
@@ -894,6 +894,7 @@ in C.
  module, created the c_zlib.c, c_lzss.c modules. The essence of the change is,
  that now all compression/decompression functions are brought
  to a single interface:
+```c
  size_t dsize(size_t ssize);
 
  bool_t compress(unsigned char *s, size_t ssize, unsigned char *d, size_t *dsize, int level);
@@ -901,7 +902,7 @@ in C.
  bool_t compress(unsigned char *s, size_t ssize, unsigned char *d, size_t *dsize);
 
  bool_t decompress(unsigned char *s, size_t ssize, unsigned char *d, size_t dsize);
-
+```
  I wrote the c_dat.c module using c_lzss. c. Tested it and it works.
 
 11-01-2011
