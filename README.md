@@ -26,7 +26,8 @@ Usage
 Dependencies
 ------------
 
-[zlib]: https://zlib.net/
+[zlib][]
+[libtermpod][]
 
 Building
 --------
@@ -99,7 +100,8 @@ Credits
 
 Related projects with similar features and information about the POD file format:
 
-- [libpodfmt][]
+
+- [libtermpod][]
 - [podextract][]
 - [QuickBMS][]
 - [physfs][]
@@ -116,7 +118,7 @@ Related projects with similar features and information about the POD file format
 
 [zlib]: http://www.zlib.net
 [libzip]: https://github.com/nih-at/libzip
-[libpodfmt]: https://github.com/jopadan/libpodfmt
+[libtermpod]: https://github.com/jopadan/libtermpod
 [podextract]: https://github.com/ghoost82/podextract 
 [QuickBMS]: https://aluigi.altervista.org/quickbms.htm
 [physfs]: https://github.com/jopadan/physfs
