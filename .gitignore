@@ -7,4 +7,6 @@ Makefile
 
 # binary
 pup
+pup.exe
 test
+test.exe
