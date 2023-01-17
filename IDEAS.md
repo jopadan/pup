@@ -57,7 +57,7 @@ Unpacking plan:
 typedef enum type_e
 {
 };
-```
+
 typedef struct resentry_s
 {
 char *name; // Resource name
