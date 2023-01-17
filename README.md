@@ -42,15 +42,6 @@ Building
 Status
 ------
 
-List of supported compression algorithms:
-
-    Supported plugins:
-    zlib   
-
-List of supported checksums:
-
-    Supported plugins:
-
 List of supported formats:
 
     $ ./pup --list
@@ -73,6 +64,15 @@ List of supported formats:
     rff30     - RFF-files of Blood, version 3.0
     rff31     - RFF-files of Blood, version 3.1
     labn      - LABN-files of Outlaws
+
+List of supported compression algorithms:
+
+    Supported plugins:
+    zlib   
+
+List of supported checksums:
+
+    Supported plugins:
 
 List of formats to be implemented:
 
