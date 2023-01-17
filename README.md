@@ -28,22 +28,16 @@ Dependencies
 ------------
 
 [zlib][]
-[libzip][]
-[libpodfmt][]
 
 Building
 --------
 
-    $ ./autogen.sh
-
-    $ ./configure --prefix=PREFIX
-
-    $ make
+    $ cmake . --install-prefix=/usr
 
     $ make install
 
     Optional original sources:
-    $ cd stupin && ./make.sh
+    $ ./make.sh
 
 Status
 ------
@@ -52,12 +46,10 @@ List of supported compression algorithms:
 
     Supported plugins:
     zlib   
-    libzip       POD-file entries deflate used in POD4-6
 
 List of supported checksums:
 
     Supported plugins:
-    crc-ccitt32  CRC variant used in POD-files
 
 List of supported formats:
 
