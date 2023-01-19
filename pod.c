@@ -101,6 +101,7 @@ bool_t resentry_to_pod_dir_entry(pod_dir_entry_t* dst, resentry_t *re)
 		dst->filename[i] = calloc(len, sizeof(pod_char_t));
 		strncpy(dst->filename[i], re->filename, len);
 	}
+
 /*
 	dst->file_path_offset = re->filename
 	dst->file_size = re->compressed;

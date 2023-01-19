@@ -60,53 +60,60 @@ typedef enum type_e
 
 typedef struct resentry_s
 {
-char *name; // Resource name
-char *filename; / / File name on disk
- size_t size; // Size of the resource on disk
- size_t compressed; // Size of the resource inside the bundle file
- size_t offset; / / Resource
-offset restype_t type; / / Resource type or compression algorithm
+    char *name;            // Resource name
+    char *filename;        // File name on disk
+    size_t size;           // Size of the resource on disk
+    size_t compressed;     // Size of the resource inside the bundle file
+    size_t offset;         // Resource
+    offset restype_t type; // Resource type or compression algorithm
 } resentry_t;
 
 typedef struct resdir_s
 {
-size_t number; / / Number of resources in
-the resentry_t *dir directory; / / Resource directory
+    size_t number;             // Number of resources in the
+    resentry_t *dir directory; // Resource directory
 } resdir_t;
 
-/ * Scans the file system, filling the resource directory with file names.
-Scanning can be recursive or non-recursive, with or without alphabetical sorting of files
-, with or without adding markers for the beginning and end of the next
-directory.*/
+/* 
+ * Scans the file system, filling the resource directory with file names.
+ * Scanning can be recursive or non-recursive, with or without alphabetical
+ * sorting of files, with or without adding markers for the beginning and end
+ * of the next directory.
+ */
 bool_t xxx_get_list(resdir_t *dir, const char *path);
 
-/ * Fills the directory with resource names that are correct for the given xxx format.* /
+/* Fills the directory with resource names that are correct for the given xxx format. */
 bool_t xxx_fill_names (resdir_t *dir);
 
-/ * Calculates the size of the initial part of the file (header and directory, if the directory is not
-at the end of the file) for the xxx format.* /
+/*
+ * Calculates the size of the initial part of the file (header and directory, if the 
+ * directory is not at the end of the file) for the xxx format.
+ */
 bool_t xxx_get_header_size(resdir_t *dir, unsigned long *header_size);
 
-/ * Packs files starting from the specified offset. When packing
-files, the remaining fields are filled in: file offset, source size,
-compressed size, and type. Returns the offset offset corresponding to the byte
-following the last packed resource. * /
+/*
+ * Packs files starting from the specified offset. When packing
+ * files, the remaining fields are filled in: file offset, source size,
+ * compressed size, and type. Returns the offset offset corresponding to the byte
+ * following the last packed resource.
+ */
 bool_t xxx_pack_files(FILE *file, resdir_t *dir, const char *basepath, unsigned long *offset);
 
-/ * Writes the resource header and directory. If the resource directory must
-be located after the resources, then it is written at offset.*/
+/*
+ * Writes the resource header and directory. If the resource directory must
+ * be located after the resources, then it is written at offset.
+ */
 bool_t xxx_write_dir(FILE *file, resdir_t *dir, unsigned long offset);
 
-/ * Reading the resource directory and filling in the missing fields. * /
+/* Reading the resource directory and filling in the missing fields. */
 bool_t xxx_read_dir(FILE *file, resdir_t *dir);
 
-/ * Extracting resources to separate files. */
+/* Extracting resources to separate files. */
 bool_t xxx_unpack_files(FILE *file, resdir_t *dir, const char *basepath);
 
-/ * Print the contents of the resource directory. * /
+/* Print the contents of the resource directory. */
 void xxx_print(resdir_t *dir);
 ```
-
  A new version of grp.c has been written, using a new standard scheme
  packing/unpacking.
 
@@ -119,35 +126,43 @@ a string is a DOS file name (checking scheme 8.3 and valid characters).
 
 Packaging:
 ```c
-/ * Scans the src_path directory for files to pack,
-fills in resource names, calculates the size of the header with the directory
-(if the directory should be located at the beginning of the file), sets
-the current file pointer file to the position where you can start
-writing resources. */
+/*
+ * Scans the src_path directory for files to pack, fills in resource names, 
+ * calculates the size of the header with the directory
+ * (if the directory should be located at the beginning of the file), sets
+ * the current file pointer file to the position where you can start
+ * writing resources.
+ */
 bool_t xxx_prepare_dir(FILE *file, resdir_t *dir, const char *src_path);
 
-/ * The pointer in the file must point to the first byte of
-a resource.
-Packages files listed in the dir directory and located in
-the src_path file system directory. Along the way, it fills in the offset of each resource,
-its size, compressed size, resource type, or compression method.*/
+/*
+ * The pointer in the file must point to the first byte of a resource.
+ * Packages files listed in the dir directory and located in
+ * the src_path file system directory. Along the way, it fills in the
+ * offset of each resource, its size, compressed size, resource type, 
+ * or compression method.
+ */
 bool_t xxx_pack_files(FILE *file, resdir_t *dir, const char *src_path);
 
-/ * The pointer in the file must point to the next byte after all resources.
- Goes to the beginning of the resource file, writes the header
-filled in the ready resource directory after the header or recorded data.*/
+/*
+ * The pointer in the file must point to the next byte after all resources.
+ * Goes to the beginning of the resource file, writes the header
+ * filled in the ready resource directory after the header or recorded data.
+ */
 bool_t xxx_write_dir(FILE *file, resdir_t *dir);
 ```
 Unpacking it:
 ```c
-/ * Reads a directory from a resource file, fills in the names of files that
-will be used when extracting resources to files. */
+/*
+ * Reads a directory from a resource file, fills in the names of files that
+ * will be used when extracting resources to files.
+ */
 bool_t xxx_read_dir(FILE *file, resdir_t *dir);
 
-/ * Print a resource directory filled with the xxx_read_fir function. * /
+/* Print a resource directory filled with the xxx_read_fir function. */
 void xxx_print_dir(resdir_t *dir);
 
-/ * Retrieves all resources from the resource file. */
+/* Retrieves all resources from the resource file. */
 bool_t xxx_unpack_files(FILE *file, resdir_t *dir, const char *dst_path);
 ```
  The grp.c program has been rewritten for a new standard packaging/unpacking scheme.
@@ -741,116 +756,117 @@ in C.
 
  List of files with the same name:
  file|
- ---|
- dpbarexp|
- dpbdcls|
- dpbdopn|
- dpbgact|
- dpbgdth1|
- dpbgdth2|
- dpbgsit1|
- dpbgsit2|
- dpbrsdth|
- dpbrssit|
- dpclaw|
- dpdmact|
- dpdmpain|
- dpdorcls|
- dpdoropn|
- dpfirsht|
- dpfirxpl|
- dpgetpow|
- dpitemup|
- dpitmbk|
- dpnoway|
- dpoof|
- dppdiehi|
- dppistol|
- dppldeth|
- dpplpain|
- dppodth1|
- dppodth2|
- dppodth3|
- dppopain|
- dpposact|
- dpposit1|
- dpposit2|
- dpposit3|
- dppstart|
- dppstop|
- dppunch|
- dprlaunc|
- dprxplod|
- dpsawful|
- dpsawhit|
- dpsawidl|
- dpsawup|
- dpsgcock|
- dpsgtatk|
- dpsgtdth|
- dpsgtsit|
- dpshotgn|
- dpslop|
- dpstnmov|
- dpswtchn|
- dpswtchx|
- dptelept|
- dptink|
- dpwpnup|
- dsbarexp|
- dsbdcls|
- dsbdopn|
- dsbgact|
- dsbgdth1|
- dsbgdth2|
- dsbgsit1|
- dsbgsit2|
- dsbrsdth|
- dsbrssit|
- dsclaw|
- dsdmact|
- dsdmpain|
- dsdorcls|
- dsdoropn|
- dsfirsht|
- dsfirxpl|
- dsgetpow|
- dsitemup|
- dsitmbk|
- dsnoway|
- dsoof|
- dspdiehi|
- dspistol|
- dspldeth|
- dsplpain|
- dspodth1|
- dspodth2|
- dspopain|
- dsposact|
- dsposit1|
- dsposit2|
- dsposit3|
- dspstart|
- dspstop|
- dspunch|
- dsrlaunc|
- dsrxplod|
- dssawful|
- dssawhit|
- dssawidl|
- dssawup|
- dssgcock|
- dssgtatk|
- dssgtdth|
- dssgtsit|
- dsshotgn|
- dsslop|
- dsstnmov|
- dsswtchn|
- dsswtchx|
- dstelept|
- dstink|
- dswpnup|
+ ---
+ dpbarexp
+ dpbdcls
+ dpbdopn
+ dpbgact
+ dpbgdth1
+ dpbgdth2
+ dpbgsit1
+ dpbgsit2
+ dpbrsdth
+ dpbrssit
+ dpclaw
+ dpdmact
+ dpdmpain
+ dpdorcls
+ dpdoropn
+ dpfirsht
+ dpfirxpl
+ dpgetpow
+ dpitemup
+ dpitmbk
+ dpnoway
+ dpoof
+ dppdiehi
+ dppistol
+ dppldeth
+ dpplpain
+ dppodth1
+ dppodth2
+ dppodth3
+ dppopain
+ dpposact
+ dpposit1
+ dpposit2
+ dpposit3
+ dppstart
+ dppstop
+ dppunch
+ dprlaunc
+ dprxplod
+ dpsawful
+ dpsawhit
+ dpsawidl
+ dpsawup
+ dpsgcock
+ dpsgtatk
+ dpsgtdth
+ dpsgtsit
+ dpshotgn
+ dpslop
+ dpstnmov
+ dpswtchn
+ dpswtchx
+ dptelept
+ dptink
+ dpwpnup
+ dsbarexp
+ dsbdcls
+ dsbdopn
+ dsbgact
+ dsbgdth1
+ dsbgdth2
+ dsbgsit1
+ dsbgsit2
+ dsbrsdth
+ dsbrssit
+ dsclaw
+ dsdmact
+ dsdmpain
+ dsdorcls
+ dsdoropn
+ dsfirsht
+ dsfirxpl
+ dsgetpow
+ dsitemup
+ dsitmbk
+ dsnoway
+ dsoof
+ dspdiehi
+ dspistol
+ dspldeth
+ dsplpain
+ dspodth1
+ dspodth2
+ dspodth3
+ dspopain
+ dsposact
+ dsposit1
+ dsposit2
+ dsposit3
+ dspstart
+ dspstop
+ dspunch
+ dsrlaunc
+ dsrxplod
+ dssawful
+ dssawhit
+ dssawidl
+ dssawup
+ dssgcock
+ dssgtatk
+ dssgtdth
+ dssgtsit
+ dsshotgn
+ dsslop
+ dsstnmov
+ dsswtchn
+ dsswtchx
+ dstelept
+ dstink
+ dswpnup
 
  This suggests the idea of trying to make a search function
  duplicates of resource names.
@@ -913,34 +929,34 @@ in C.
  Finished loading metadata. I found that blood.rff has resources with
  the same names:
  file|
- ---|
- BAT1D1. SEQ|
- BEST1D1.SEQ|
- BEST2D1.SEQ|
- CERB1E1.SEQ|
- CULT1D3B.SEQ|
- CULT2E1.SEQ|
- GOST1M1.SEQ|
- HAND1D1.SEQ|
- PLAY1D1.SEQ|
- PLAY1M1.SEQ|
- PLAY1M4.SEQ|
- POD1CLOS.SEQ|
- POD2CLOS.SEQ|
- PRIS1D1.SEQ|
- RAT1D1.SEQ|
- SPID3A2.SEQ|
- SPID3D1.SEQ|
- SPID3D2.SEQ|
- SPID3D3.SEQ|
- SPID3I1.SEQ|
- SPID3M1.SEQ|
- SPID3M2.SEQ|
- TBOG1D1.SEQ|
- TENT1D2.SEQ|
- TENT1DOW.SEQ|
- TENT2D2.SEQ|
- TENT2DOW.SEQ|
+ ---
+ BAT1D1. SEQ
+ BEST1D1.SEQ
+ BEST2D1.SEQ
+ CERB1E1.SEQ
+ CULT1D3B.SEQ
+ CULT2E1.SEQ
+ GOST1M1.SEQ
+ HAND1D1.SEQ
+ PLAY1D1.SEQ
+ PLAY1M1.SEQ
+ PLAY1M4.SEQ
+ POD1CLOS.SEQ
+ POD2CLOS.SEQ
+ PRIS1D1.SEQ
+ RAT1D1.SEQ
+ SPID3A2.SEQ
+ SPID3D1.SEQ
+ SPID3D2.SEQ
+ SPID3D3.SEQ
+ SPID3I1.SEQ
+ SPID3M1.SEQ
+ SPID3M2.SEQ
+ TBOG1D1.SEQ
+ TENT1D2.SEQ
+ TENT1DOW.SEQ
+ TENT2D2.SEQ
+ TENT2DOW.SEQ
 
 18-01-2011
 
