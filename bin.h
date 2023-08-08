@@ -32,6 +32,8 @@ typedef enum binrw_error_e
 
 #define SYS_PATH_DELIM	'/'
 #define SYS_PATH_SDELIM	"/"
+#define MAX_STR (4 + 2 + 2 + 1 + 2 + 2 + 2 + 1)
+
 
 bool_t fextract(const char *dst_filename, FILE * src, size_t size);
 bool_t fadd(FILE * dst, const char *src_filename, size_t * psize);

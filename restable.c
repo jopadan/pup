@@ -329,11 +329,24 @@ bool_t rt_extract_resource(restable_t * rt, size_t i)
   filename = NULL;
   s_strcpy(&filename, rt->basepath);
   s_strcat(&filename, rt->entries[i].filename);
-  fseek(rt->file, rt->entries[i].offset, SEEK_SET);
-  if (fextract(filename, rt->file, rt->entries[i].size) == FALSE)
+  if(rt->entries[i].filename[strlen(filename)] == SYS_PATH_DELIM)
   {
-    fprintf(stderr, "rt_extract_resource: Can't create or write file \"%s\".\n",
-            filename);
+    if(mkpath(rt->entries[i].filename, 0777) == FALSE)
+    {
+      fprintf(stderr, "rt_extract_resource: Can't create directory \"%s.\n",
+              filename);
+              s_free(&filename);
+	      return FALSE;
+    }
+  }
+  else
+  {
+    fseek(rt->file, rt->entries[i].offset, SEEK_SET);
+    if (fextract(filename, rt->file, rt->entries[i].size) == FALSE)
+    {
+       fprintf(stderr, "rt_extract_resource: Can't create or write file \"%s\".\n",
+               filename);
+    }
     s_free(&filename);
     return FALSE;
   }
@@ -343,11 +356,10 @@ bool_t rt_extract_resource(restable_t * rt, size_t i)
 
 void rt_print_dir(restable_t * rt, FILE * file)
 {
-  char *s_t;
+  char* s_t;
   size_t i;
-
   s_t = NULL;
-  for(i = 0; i < rt->number; i++)
+  for(i = 0; i < rt->number + 1; i++)
   {
     if (rt->entries[i].time != 0)
       s_time(&s_t, rt->entries[i].time);
@@ -686,6 +698,7 @@ bool_t rt_search_equal_files(restable_t * rt)
           "Searching of files with same content finished. Found %zu files.\n",
           copies);
   s_free(&filename0);
+
   s_free(&filename1);
   return TRUE;
 }

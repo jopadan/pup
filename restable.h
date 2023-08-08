@@ -4,8 +4,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "bin.h"
-#include "chksum.h"
-#include "audit.h"
 
 #define META_EXT ".txt"
 
@@ -26,7 +24,6 @@ typedef struct resentry_s
   time_t time;                  /* Additional resource attributes - time */
   size_t type;                  /* Additional resource attributes */
   size_t id;                    /* Additional resource attributes */
-  checksum_t checksum;          /* Checksum */
 
   ssize_t copyof;               /* -1, if this resource is not a copy of another */
 } resentry_t;
@@ -42,17 +39,11 @@ typedef struct restable_s
   time_t time;                  /* file creation/mod date */
   size_t type;                  /* file type     */
   size_t id;                    /* file hash id  */
-  checksum_t checksum;          /* file checksum */
 
   /* Resource table */
   size_t number;
   size_t maxnumber;
   resentry_t   *entries;
-
-  /* Audit table */
-  size_t audits;
-  size_t maxaudits;
-  auditentry_t *auditentries; 
 } restable_t;
 
 /* Create a new batch file */

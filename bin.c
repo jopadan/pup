@@ -1965,8 +1965,6 @@ time_t unix2dos_timestamp(const time_t timestamp)
   return ts;
 }
 
-#define MAX_STR (4 + 2 + 2 + 1 + 2 + 2 + 2 + 1)
-
 bool_t s_time(char **p, const time_t timestamp)
 {
   char s[MAX_STR];
@@ -1978,6 +1976,5 @@ bool_t s_time(char **p, const time_t timestamp)
   if (t == NULL)
     return s_strcpy(p, "");
   l = strftime(s, MAX_STR, "%Y%m%d-%H%M%S", t);
-  free(t);
   return s_strncpy(p, s, l);
 }

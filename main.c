@@ -18,7 +18,8 @@
 #include "dat2.h"
 #include "rff.h"
 #include "labn.h"
-#include "pod.h"
+#include "csid.h"
+#include "tar.h"
 
 typedef struct plugin_s
 {
@@ -464,47 +465,47 @@ plugin_t plugins[] = {
    &labn_add_resource,
    &labn_write_dir},
   {
-   "pod",
-   "POD[1-6]-files of Terminal Reality games",
-   POD_SUBDIRS,
-   POD_MERGE,
-   POD_META,
-   POD_TIME,
-   POD_PAGE,
-   &is_pod,
+   "csid",
+   "BIN-file of Chasm: The Rift",
+   CSID_SUBDIRS,
+   CSID_MERGE,
+   CSID_META,
+   CSID_TIME,
+   CSID_PAGE,
+   &is_csid,
 
-   &pod_read_dir,
-   &pod_fill_filename,
-   &pod_extract_resource,
+   &csid_read_dir,
+   &csid_fill_filename,
+   &csid_extract_resource,
 
-   &pod_save_meta,
-   &pod_load_meta,
+   &csid_save_meta,
+   &csid_load_meta,
 
-   &pod_fill_name,
-   &pod_prepare_dir,
-   &pod_add_resource,
-   &pod_write_dir},
+   &csid_fill_name,
+   &csid_prepare_dir,
+   &csid_add_resource,
+   &csid_write_dir},
   {
-   "epd",
-   "EPD-files of Terminal Reality games",
-   POD_SUBDIRS,
-   POD_MERGE,
-   POD_META,
-   POD_TIME,
-   POD_PAGE,
-   &is_pod,
+   "tar",
+   "TAR-files POSIX GNU format",
+   TAR_SUBDIRS,
+   TAR_MERGE,
+   TAR_META,
+   TAR_TIME,
+   TAR_PAGE,
+   &is_tar,
 
-   &pod_read_dir,
-   &pod_fill_filename,
-   &pod_extract_resource,
+   &tar_read_dir,
+   &tar_fill_filename,
+   &tar_extract_resource,
 
-   &pod_save_meta,
-   &pod_load_meta,
+   &tar_save_meta,
+   &tar_load_meta,
 
-   &pod_fill_name,
-   &pod_prepare_dir,
-   &pod_add_resource,
-   &pod_write_dir}
+   &tar_fill_name,
+   &tar_prepare_dir,
+   &tar_add_resource,
+   &tar_write_dir}
 };
 
 #define NUM_PLUGINS (sizeof(plugins) / sizeof(plugin_t))
